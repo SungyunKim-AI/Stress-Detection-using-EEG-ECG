@@ -1,0 +1,28 @@
+가상환경 리스트
+conda env list
+
+가상환경 생성
+conda create -n "NAME" python=3
+
+가상환경 실행
+conda activate "NAME"
+
+가상환경 삭제
+conda remove --name "NAME" --all
+
+가상환경 이름 변경
+conda create -n "newNAME" --clone "NAME"
+
+패키지 설치 및 업데이트
+conda install {package_name}
+conda update {package_name}
+
+아나콘다 vscode 연동
+conda install -c conda-forge jupyter
+conda install -c conda-forge pylint
+
+VS code 설정
+Code Runner, Python extension 다운
+ctrl + shift + p 누르고 -> Python: Select Interpreter
+ctrl + ` 누르면 -> Terminal 불러옴
+
