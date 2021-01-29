@@ -6,4 +6,3 @@
 2) stress state
 
 (arousal > 5) ∩ (valence < 3) """
-
