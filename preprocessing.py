@@ -1,9 +1,15 @@
+import os
+pathToExecutable = ('C:\\Program Files\\GNU Octave\\Octave-6.1.0\\mingw64\\bin\\octave-cli.exe')
+os.environ['OCTAVE_EXECUTABLE'] = pathToExecutable
+from oct2py import octave
+octave.addpath('/functions')
+
 import numpy as np
 import pandas as pd
-from scipy.io as sio
+import scipy.io as sio
 from scipy import signal
 from sklearn import preprocessing as pre
-from oct2py import octave
+
 # python에서 EEGLAB을 사용하기 위해서는 Octave가 필요하다 (함수 정리 블로그 : https://gorakgarak.tistory.com/448)
 
 # EEG 신호는 여러 artifact, noise로 인해 오염되므로, denoising 이 필요하다.
@@ -22,19 +28,42 @@ from oct2py import octave
 # 추가 분석을 위해 EEG 데이터를 준비하는 마지막 단계는 모든 전극의 평균 값을 계산하고, 각 전극의 각 샘플에서 빼는 Cohen [32]에서 권장하는 CAR (Common Average Reference) 방법을 적용하는 것입니다.
 # 불량 채널의 제거는 가능한 불량 채널로 인해 모든 채널에 노이즈가 유입되는 것을 방지하기 위해 CAR 방법 이전에 수행됩니다.
 
+###### 정리 #######
+# 1. Hamming sinc linear phase FIR filters 적용
+# 2. DC constant를 처음과 끝에 padding
+# 3. shift by the filter’s group delay
+# 4. Kothe [31]가 제안한 ASR (Artifact Subspace Reconstruction)
+# 5. Cohen [32]에서 권장하는 CAR (Common Average Reference)
 
-def preprocessing(input,feature):
-    overall = octave. signal.firwin(9,[0.0625,0.46875],window='hamming')
-    theta   = signal.firwin(9,[0.0625,0.125],window='hamming')
-    alpha   = signal.firwin(9,[0.125,0.203125],window='hamming')
-    beta    = signal.firwin(9,[0.203125,0.46875],window='hamming')
-    filtedData=signal.filtfilt(overall,1,input)
-    filtedtheta=signal.filtfilt(theta,1,filtedData)
-    filtedalpha=signal.filtfilt(alpha,1,filtedData)
-    filtedbeta=signal.filtfilt(beta,1,filtedData)
-    ftheta,psdtheta=signal.welch(filtedtheta,nperseg=256)
-    falpha,psdalpha=signal.welch(filtedalpha,nperseg=256)
-    fbeta,psdbeta=signal.welch(filtedbeta,nperseg=256)
+def preprocessing(input, feature):
+    # theta, alpha, beta hamming filter 생성 : signal.firwin(numtaps, cutoff, window)
+    # numtaps = 필터의 길이
+    # cutoff = 필터의 차단 주파수
+    # window = 필터링에 사용할 window
+    overall = signal.firwin(9, [0.0625, 0.46875],   window = 'hamming')
+    theta   = signal.firwin(9, [0.0625, 0.125],     window = 'hamming')
+    alpha   = signal.firwin(9, [0.125, 0.203125],   window = 'hamming')
+    beta    = signal.firwin(9, [0.203125, 0.46875], window = 'hamming')
+
+    # Data filtering : signal.filtfilt(b, a, x)
+    # b = 필터의 분자 coefficient vector
+    # a = 필터의 분모 coefficient vector
+    # x = 필터링할 데이터 배열
+    filtedData  = signal.filtfilt(overall, 1, input)
+    filtedtheta = signal.filtfilt(theta,   1, filtedData)
+    filtedalpha = signal.filtfilt(alpha,   1, filtedData)
+    filtedbeta  = signal.filtfilt(beta,    1, filtedData)
+
+    # DC constanct padding
+    # Shift by filter's group delay
+
+    # ASR (Artifact Subspace Reconstruction)
+
+    # CAR (Common Average Reference)
+
+    ftheta,psdtheta = signal.welch(filtedtheta,nperseg=256)
+    falpha,psdalpha = signal.welch(filtedalpha,nperseg=256)
+    fbeta,psdbeta = signal.welch(filtedbeta,nperseg=256)
     feature.append(max(psdtheta))
     feature.append(max(psdalpha))
     feature.append(max(psdbeta))
