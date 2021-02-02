@@ -48,13 +48,6 @@ def preprocessing(input, feature):
     filtedalpha = signal.filtfilt(alpha,   1, filtedData)
     filtedbeta  = signal.filtfilt(beta,    1, filtedData)
 
-    # DC constanct padding
-    # Shift by filter's group delay
-
-    # ASR (Artifact Subspace Reconstruction)
-
-    # CAR (Common Average Reference)
-
     ftheta,psdtheta = signal.welch(filtedtheta,nperseg=256)
     falpha,psdalpha = signal.welch(filtedalpha,nperseg=256)
     fbeta,psdbeta = signal.welch(filtedbeta,nperseg=256)
@@ -91,7 +84,7 @@ if __name__ == '__main__':
         col.append('psdbeta_'+str(i + 1)+'_un')
     EEG=pd.DataFrame(EEG_tmp.reshape((23 * 18,EEG_tmp.shape[2])),columns=col)
     scaler=pre.StandardScaler()
-    for i in range(len(col)):`
+    for i in range(len(col)):
         EEG[col[i][:-3]]=scaler.fit_transform(EEG[[col[i]]])
     EEG.drop(col,axis=1,inplace=True)
     print(EEG)
