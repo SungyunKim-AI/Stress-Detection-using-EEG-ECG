@@ -1,9 +1,3 @@
-import os
-pathToExecutable = ('C:\\Program Files\\GNU Octave\\Octave-6.1.0\\mingw64\\bin\\octave-cli.exe')
-os.environ['OCTAVE_EXECUTABLE'] = pathToExecutable
-from oct2py import octave
-octave.addpath('/functions')
-
 import numpy as np
 import pandas as pd
 import scipy.io as sio
@@ -97,7 +91,7 @@ if __name__ == '__main__':
         col.append('psdbeta_'+str(i + 1)+'_un')
     EEG=pd.DataFrame(EEG_tmp.reshape((23 * 18,EEG_tmp.shape[2])),columns=col)
     scaler=pre.StandardScaler()
-    for i in range(len(col)):
+    for i in range(len(col)):`
         EEG[col[i][:-3]]=scaler.fit_transform(EEG[[col[i]]])
     EEG.drop(col,axis=1,inplace=True)
     print(EEG)
