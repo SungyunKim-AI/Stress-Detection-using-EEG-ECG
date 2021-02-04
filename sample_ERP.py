@@ -23,50 +23,22 @@ from matplotlib import pyplot as plt
 
 from dataloader import dataloader
 
-# while the default tensorflow ordering is 'channels_last' we set it here
-# to be explicit in case if the user has changed the default ordering
-# K.set_image_data_format('channels_last')
-
-# ##################### Process, filter and epoch the data ######################
-# data_path = sample.data_path()
-
-# # Set parameters and read data
-# raw_fname = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
-# event_fname = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
-# tmin, tmax = -0., 1
-# event_id = dict(aud_l=1, aud_r=2, vis_l=3, vis_r=4)
-
-# # Setup for reading the raw data
-# raw = io.Raw(raw_fname, preload=True, verbose=False)
-# raw.filter(2, None, method='iir')  # replace baselining with high-pass
-# events = mne.read_events(event_fname)
-
-# raw.info['bads'] = ['MEG 2443']  # set bad channels
-# picks = mne.pick_types(raw.info, meg=False, eeg=True, stim=False, eog=False,
-#                        exclude='bads')
-
-# # Read epochs
-# epochs = mne.Epochs(raw, events, event_id, tmin, tmax, proj=False,
-#                     picks=picks, baseline=None, preload=True, verbose=False)
-# labels = epochs.events[:, -1]
-
-# extract raw data. scale by 1000 due to scaling sensitivity in deep learning
-# X = epochs.get_data()*1000 # format is in (trials, channels, samples)
-# y = labels
-
 EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
 X = EEG_stimuli
-y = Labels
+y = Labels[0]
+y = 1 if y > 3 else 0
+
 
 kernels, chans, samples = 1, 14, 7808
 
 # take 50/25/25 percent of the data to train/validate/test
-X_train      = X[0:144,]
-Y_train      = y[0:144]
-X_validate   = X[144:216,]
-Y_validate   = y[144:216]
-X_test       = X[216:,]
-Y_test       = y[216:]
+X_train      = X[0:207,]
+Y_train      = y[0:207]
+X_validate   = X[207:310,]
+Y_validate   = y[207:310]
+X_test       = X[310:,]
+Y_test       = y[310:]
+
 
 ############################# EEGNet portion ##################################
 

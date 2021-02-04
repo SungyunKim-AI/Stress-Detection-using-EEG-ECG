@@ -31,9 +31,9 @@ def dataloader():
             ECG_baseline.append(baseline_c)
             ECG_stimuli.append(stimuli_c)
 
-        Labels[0].append(data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreValence'][0,0][:, 0])
-        Labels[1].append(data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreArousal'][0,0][:,0])
-        Labels[2].append(data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreDominance'][0,0][:,0])
+        np.append(Lables[0], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreValence'][0,0][:, 0])
+        np.append(Labels[1], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreArousal'][0,0][:,0])
+        np.append(Labels[2], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreDominance'][0,0][:,0])
 
     EEG_baseline = np.asarray(EEG_baseline)
     EEG_baseline = np.swapaxes(EEG_baseline, 1, 2)
