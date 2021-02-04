@@ -19,7 +19,7 @@ def dataloader():
     EEG_stimuli = []
     ECG_baseline = []
     ECG_stimuli = []
-    Labels = np.zeros((numOfCategory, numOfSubjects * numOfVideo))
+    Labels = np.zeros((numOfCategory, numOfSubjects, numOfVideo))
 
     print("Data Transforming...")
     for iter_subject in range(0, numOfSubjects):
@@ -38,12 +38,18 @@ def dataloader():
             ECG_baseline.append(baseline_c)
             ECG_stimuli.append(stimuli_c)
 
-        np.append(Labels[0], data['DREAMER'][0, 0]['Data']
-                  [0, iter_subject]['ScoreValence'][0, 0][:, 0])
-        np.append(Labels[1], data['DREAMER'][0, 0]['Data']
-                  [0, iter_subject]['ScoreArousal'][0, 0][:, 0])
-        np.append(Labels[2], data['DREAMER'][0, 0]['Data']
-                  [0, iter_subject]['ScoreDominance'][0, 0][:, 0])
+            if data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreValence'][0,0][iter_video,0]<4:
+                Labels[0, iter_subject, iter_video] = 0
+            else:
+                Labels[0, iter_subject, iter_video] = 1
+            if data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreArousal'][0,0][iter_video,0]<4:
+                Labels[1, iter_subject, iter_video] = 0
+            else:
+                Labels[1, iter_subject, iter_video] = 1
+            if data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreDominance'][0,0][iter_video,0]<4:
+                Labels[2, iter_subject, iter_video] = 0
+            else:
+                Labels[2, iter_subject, iter_video] = 1
 
     EEG_baseline = np.asarray(EEG_baseline)
     EEG_baseline = np.swapaxes(EEG_baseline, 1, 2)
@@ -53,25 +59,23 @@ def dataloader():
     ECG_baseline = np.swapaxes(ECG_baseline, 1, 2)
     ECG_stimuli = np.asarray(ECG_stimuli)
     ECG_stimuli = np.swapaxes(ECG_stimuli, 1, 2)
+    Labels = Labels.reshape(numOfCategory, numOfSubjects*numOfVideo)
 
     # Tensorflow 배열 타입으로 변형
-    EEG_baseline = tf.convert_to_tensor(EEG_baseline, dtype=tf.float32)
-    EEG_stimuli = tf.convert_to_tensor(EEG_stimuli, dtype=tf.float32)
-    ECG_baseline = tf.convert_to_tensor(ECG_baseline, dtype=tf.float32)
-    ECG_stimuli = tf.convert_to_tensor(ECG_stimuli, dtype=tf.float32)
+    # EEG_baseline = tf.convert_to_tensor(EEG_baseline, dtype=tf.float32)
+    # EEG_stimuli = tf.convert_to_tensor(EEG_stimuli, dtype=tf.float32)
+    # ECG_baseline = tf.convert_to_tensor(ECG_baseline, dtype=tf.float32)
+    # ECG_stimuli = tf.convert_to_tensor(ECG_stimuli, dtype=tf.float32)
 
-    # Labels 2 class 분류
-    # for i in range(0, 3):
-    #     for j in range(0, 414):
-    #         if Labels[i, j] > 3:
-    #             Labels[i, j] = 1
-    #         else:
-    #             Labels[i, j] = 0
+    print("EEG_baseline.shape = ", EEG_baseline.shape)          # (414, 14, 7808)
+    print("EEG_stimuli.shape = ", EEG_stimuli.shape)            # (414, 14, 7808)
+    print("ECG_baseline.shape = ", ECG_baseline.shape)          # (414, 2, 15616)
+    print("ECG_stimuli.shape = ", ECG_stimuli.shape)            # (414, 2, 15616)
+    print("Labels.shape = ", Labels.shape)                      # (3, 414)
 
-    print("EEG_baseline.shape = ", EEG_baseline.shape)           # 414, 14, 7808
-    print("EEG_stimuli.shape = ", EEG_stimuli.shape)
-    print("ECG_baseline.shape = ", ECG_baseline.shape)
-    print("ECG_stimuli.shape = ", ECG_stimuli.shape)
-    print("Labels.shape = ", Labels.shape)
+    for j in range(0, 414):
+        for i in range(0, 3):
+            print(Labels[i][j], end=", ")
+        print()
 
     return EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels
