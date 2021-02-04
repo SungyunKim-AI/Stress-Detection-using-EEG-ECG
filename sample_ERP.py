@@ -20,6 +20,7 @@ from sklearn.linear_model import LogisticRegression
 
 # tools for plotting confusion matrices
 from matplotlib import pyplot as plt
+from sklearn.model_selection import train_test_split
 
 from dataloader import dataloader
 
@@ -32,20 +33,24 @@ print(y)
 kernels, chans, samples = 1, 14, 7808
 
 # take 50/25/25 percent of the data to train/validate/test
-X_train = X[0:207, ]
-Y_train = y[0:207]
-X_validate = X[207:310, ]
-Y_validate = y[207:310]
-X_test = X[310:, ]
-Y_test = y[310:]
+X_train, X_validate, Y_train, Y_validate = train_test_split(
+    X, y, test_size=0.3, random_state=42)
+X_validate, X_test, Y_validate, Y_test = train_test_split(
+    X_validate, Y_validate, test_size=0.3, random_state=42)
+# X_train = X[0:207, ]
+# Y_train = y[0:207]
+# X_validate = X[207:310, ]
+# Y_validate = y[207:310]
+# X_test = X[310:, ]
+# Y_test = y[310:]
 
 
 ############################# EEGNet portion ##################################
 
 # convert labels to one-hot encodings.
-Y_train = np_utils.to_categorical(Y_train-1)
-Y_validate = np_utils.to_categorical(Y_validate-1)
-Y_test = np_utils.to_categorical(Y_test-1)
+Y_train = np_utils.to_categorical(Y_train, num_classes=2)
+Y_validate = np_utils.to_categorical(Y_validate, num_classes=2)
+Y_test = np_utils.to_categorical(Y_test, num_classes=2)
 
 # convert data to NHWC (trials, channels, samples, kernels) format. Data
 # contains 60 channels and 151 time-points. Set the number of kernels to 1.
@@ -59,8 +64,8 @@ print(X_test.shape[0], 'test samples')
 
 # configure the EEGNet-8,2,16 model with kernel length of 32 samples (other
 # model configurations may do better, but this is a good starting point)
-model = EEGNet(nb_classes=4, Chans=chans, Samples=samples,
-               dropoutRate=0.5, kernLength=32, F1=8, D=2, F2=16,
+model = EEGNet(nb_classes=2, Chans=chans, Samples=samples,
+               dropoutRate=0.5, kernLength=10, F1=6, D=2, F2=12,
                dropoutType='Dropout')
 
 # compile the model and set the optimizers
@@ -90,12 +95,15 @@ class_weights = {0: 1, 1: 1, 2: 1, 3: 1}
 # pretty noisy run-to-run, but most runs should be comparable to xDAWN +
 # Riemannian geometry classification (below)
 ################################################################################
-fittedModel = model.fit(X_train, Y_train, batch_size=16, epochs=300,
+# fittedModel = model.fit(X_train, Y_train, batch_size=16, epochs=300,
+#                         verbose=2, validation_data=(X_validate, Y_validate),
+#                         callbacks=[checkpointer], class_weight=class_weights)
+fittedModel = model.fit(X_train, Y_train, batch_size=10, epochs=300,
                         verbose=2, validation_data=(X_validate, Y_validate),
-                        callbacks=[checkpointer], class_weight=class_weights)
+                        callbacks=[checkpointer])
 
 # load optimal weights
-model.load_weights('/tmp/checkpoint.h5')
+# model.load_weights('/tmp/checkpoint.h5')
 
 ###############################################################################
 # can alternatively used the weights provided in the repo. If so it should get
