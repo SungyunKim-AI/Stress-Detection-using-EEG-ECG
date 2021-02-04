@@ -2,10 +2,12 @@ import numpy as np
 import scipy.io as sio
 import tensorflow as tf
 
+
 def dataloader():
-    path=u'DREAMER.mat'
-    data=sio.loadmat(path)
-    
+    print("Data Loading...")
+    path = u'DREAMER.mat'
+    data = sio.loadmat(path)
+
     # 23명의 실험참여자가 18개의 비디오 클립을 시청하고, 128Hz로 60초간 14개의 채널로 측정한 RAW 데이터
     numOfSubjects = 23      # 실험 참여자 수
     numOfVideo = 18         # 시청한 비디오 클립 수
@@ -19,21 +21,29 @@ def dataloader():
     ECG_stimuli = []
     Labels = np.zeros((numOfCategory, numOfSubjects * numOfVideo))
 
+    print("Data Transforming...")
     for iter_subject in range(0, numOfSubjects):
         for iter_video in range(0, numOfVideo):
-            baseline_e = data['DREAMER'][0,0]['Data'][0,iter_subject]['EEG'][0,0]['baseline'][0,0][iter_video,0][:,:]
-            stimuli_e  = data['DREAMER'][0,0]['Data'][0,iter_subject]['EEG'][0,0]['stimuli'][0,0][iter_video,0][-7808:,:]
+            baseline_e = data['DREAMER'][0, 0]['Data'][0,
+                                                       iter_subject]['EEG'][0, 0]['baseline'][0, 0][iter_video, 0][:, :]
+            stimuli_e = data['DREAMER'][0, 0]['Data'][0, iter_subject]['EEG'][0,
+                                                                              0]['stimuli'][0, 0][iter_video, 0][-7808:, :]
             EEG_baseline.append(baseline_e)
             EEG_stimuli.append(stimuli_e)
 
-            baseline_c = data['DREAMER'][0,0]['Data'][0,iter_subject]['ECG'][0,0]['baseline'][0,0][iter_video,0][:,:]
-            stimuli_c = data['DREAMER'][0,0]['Data'][0,iter_subject]['ECG'][0,0]['stimuli'][0,0][iter_video,0][-15616:,:] 
+            baseline_c = data['DREAMER'][0, 0]['Data'][0,
+                                                       iter_subject]['ECG'][0, 0]['baseline'][0, 0][iter_video, 0][:, :]
+            stimuli_c = data['DREAMER'][0, 0]['Data'][0, iter_subject]['ECG'][0,
+                                                                              0]['stimuli'][0, 0][iter_video, 0][-15616:, :]
             ECG_baseline.append(baseline_c)
             ECG_stimuli.append(stimuli_c)
 
-        np.append(Lables[0], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreValence'][0,0][:, 0])
-        np.append(Labels[1], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreArousal'][0,0][:,0])
-        np.append(Labels[2], data['DREAMER'][0,0]['Data'][0,iter_subject]['ScoreDominance'][0,0][:,0])
+        np.append(Labels[0], data['DREAMER'][0, 0]['Data']
+                  [0, iter_subject]['ScoreValence'][0, 0][:, 0])
+        np.append(Labels[1], data['DREAMER'][0, 0]['Data']
+                  [0, iter_subject]['ScoreArousal'][0, 0][:, 0])
+        np.append(Labels[2], data['DREAMER'][0, 0]['Data']
+                  [0, iter_subject]['ScoreDominance'][0, 0][:, 0])
 
     EEG_baseline = np.asarray(EEG_baseline)
     EEG_baseline = np.swapaxes(EEG_baseline, 1, 2)
@@ -50,10 +60,18 @@ def dataloader():
     ECG_baseline = tf.convert_to_tensor(ECG_baseline, dtype=tf.float32)
     ECG_stimuli = tf.convert_to_tensor(ECG_stimuli, dtype=tf.float32)
 
-    print(EEG_baseline.shape)           # 414, 14, 7808
-    print(EEG_stimuli.shape)
-    print(ECG_baseline.shape)
-    print(ECG_stimuli.shape)
-    print(Labels.shape)
+    # Labels 2 class 분류
+    # for i in range(0, 3):
+    #     for j in range(0, 414):
+    #         if Labels[i, j] > 3:
+    #             Labels[i, j] = 1
+    #         else:
+    #             Labels[i, j] = 0
+
+    print("EEG_baseline.shape = ", EEG_baseline.shape)           # 414, 14, 7808
+    print("EEG_stimuli.shape = ", EEG_stimuli.shape)
+    print("ECG_baseline.shape = ", ECG_baseline.shape)
+    print("ECG_stimuli.shape = ", ECG_stimuli.shape)
+    print("Labels.shape = ", Labels.shape)
 
     return EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels
