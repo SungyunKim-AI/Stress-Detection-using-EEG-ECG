@@ -61,21 +61,10 @@ def dataloader():
     ECG_stimuli = np.swapaxes(ECG_stimuli, 1, 2)
     Labels = Labels.reshape(numOfCategory, numOfSubjects*numOfVideo)
 
-    # Tensorflow 배열 타입으로 변형
-    # EEG_baseline = tf.convert_to_tensor(EEG_baseline, dtype=tf.float32)
-    # EEG_stimuli = tf.convert_to_tensor(EEG_stimuli, dtype=tf.float32)
-    # ECG_baseline = tf.convert_to_tensor(ECG_baseline, dtype=tf.float32)
-    # ECG_stimuli = tf.convert_to_tensor(ECG_stimuli, dtype=tf.float32)
-
     print("EEG_baseline.shape = ", EEG_baseline.shape)          # (414, 14, 7808)
     print("EEG_stimuli.shape = ", EEG_stimuli.shape)            # (414, 14, 7808)
     print("ECG_baseline.shape = ", ECG_baseline.shape)          # (414, 2, 15616)
     print("ECG_stimuli.shape = ", ECG_stimuli.shape)            # (414, 2, 15616)
     print("Labels.shape = ", Labels.shape)                      # (3, 414)
-
-    for j in range(0, 414):
-        for i in range(0, 3):
-            print(Labels[i][j], end=", ")
-        print()
 
     return EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels

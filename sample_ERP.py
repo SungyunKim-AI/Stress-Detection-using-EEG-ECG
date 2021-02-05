@@ -3,7 +3,6 @@ import numpy as np
 # mne imports
 import mne
 from mne import io
-from mne.datasets import sample
 
 # EEGNet-specific imports
 from EEGModels import EEGNet
@@ -20,28 +19,27 @@ from sklearn.linear_model import LogisticRegression
 
 # tools for plotting confusion matrices
 from matplotlib import pyplot as plt
+
+# data set split
 from sklearn.model_selection import train_test_split
 
+# data load from dataloader.py
 from dataloader import dataloader
-
 EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
+
+# preprocessing
+""" To DO..... """
+
+# split the data to train/validate/test
 X = EEG_stimuli
 y = Labels[0]
 
-
 kernels, chans, samples = 1, 14, 7808
 
-# take 50/25/25 percent of the data to train/validate/test
 X_train, X_validate, Y_train, Y_validate = train_test_split(
     X, y, test_size=0.3, random_state=42)
 X_validate, X_test, Y_validate, Y_test = train_test_split(
     X_validate, Y_validate, test_size=0.3, random_state=42)
-# X_train = X[0:207, ]
-# Y_train = y[0:207]
-# X_validate = X[207:310, ]
-# Y_validate = y[207:310]
-# X_test = X[310:, ]
-# Y_test = y[310:]
 
 
 ############################# EEGNet portion ##################################
