@@ -1,5 +1,15 @@
-## 데이터 파일 무시
+# 데이터 파일
 DREAMER.mat
+
+# 라이브러리 파일
 src/
-.vscode/
-__pycache__/
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+#Cache
+__pycache__
