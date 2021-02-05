@@ -28,7 +28,6 @@ EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
 X = EEG_stimuli
 y = Labels[0]
 
-print(y)
 
 kernels, chans, samples = 1, 14, 7808
 
