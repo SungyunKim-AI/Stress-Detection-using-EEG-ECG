@@ -64,10 +64,9 @@ print('X_train shape:', X_train.shape)
 print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
 
-# configure the EEGNet-8,2,16 model with kernel length of 32 samples (other
-# model configurations may do better, but this is a good starting point)
+# EEGNet model init
 model = EEGNet(nb_classes=2, Chans=chans, Samples=samples,
-               dropoutRate=0.5, kernLength=10, F1=6, D=2, F2=12,
+               dropoutRate=0.5, kernLength=64, F1=6, D=2, F2=12,
                dropoutType='Dropout')
 
 # compile the model and set the optimizers
