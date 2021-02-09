@@ -37,12 +37,11 @@ X = preprocessing(EEG_baseline, EEG_stimuli)
 Y = Labels[0]   # Labels : 0 = Valence, 1 = Arousal, 2 = Dominance
 
 
-# split the data to train/validate/test -> 50 : 25 : 25 (207 : 103 : 104)
+# split the data to train/validate/test -> 60 : 20 : 20 (248 : 83 : 83)
 X_train, X_validate, Y_train, Y_validate = train_test_split(
-    X, Y, test_size=0.5, random_state=42)
+    X, Y, test_size=0.4, random_state=42)
 X_validate, X_test, Y_validate, Y_test = train_test_split(
     X_validate, Y_validate, test_size=0.5, random_state=42)
-
 
 
 
@@ -72,15 +71,13 @@ model = EEGNet(nb_classes=2, Chans=chans, Samples=samples,
                dropoutType='Dropout')
 
 # compile the model and set the optimizers
-model.compile(loss='categorical_crossentropy', optimizer='adam',
-              metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # count number of parameters in the model
 numParams = model.count_params()
 
 # set a valid path for your system to record model checkpoints
-checkpointer = ModelCheckpoint(filepath='/tmp/checkpoint.h5', verbose=1,
-                               save_best_only=True)
+checkpointer = ModelCheckpoint(filepath='/tmp/checkpoint.h5', verbose=1, save_best_only=True)
 
 ###############################################################################
 # if the classification task was imbalanced (significantly more trials in one
@@ -91,7 +88,7 @@ checkpointer = ModelCheckpoint(filepath='/tmp/checkpoint.h5', verbose=1,
 
 # the syntax is {class_1:weight_1, class_2:weight_2,...}. Here just setting
 # the weights all to be 1
-class_weights = {0: 1, 1: 1, 2: 1, 3: 1}
+#class_weights = {0: 1, 1: 1, 2: 1, 3: 1}
 
 ################################################################################
 # fit the model. Due to very small sample sizes this can get
