@@ -17,29 +17,33 @@ from pyriemann.utils.viz import plot_confusion_matrix
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LogisticRegression
 
-# tools for plotting confusion matrices
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt                    # tools for plotting confusion matrices
+from sklearn.model_selection import train_test_split    # data set split
+from dataloader import dataloader                       # data load from dataloader.py
 
-# data set split
-from sklearn.model_selection import train_test_split
 
-# data load from dataloader.py
-from dataloader import dataloader
+# Data Loading
 EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
 
-# preprocessing
-""" To DO..... """
+# Preprocessing
+def preprocessing(EEG_baseline, EEG_stimuli):
+    preprocessed_EEG = EEG_stimuli
+    """ 
+        TO DO..... 
+                    """
+    return preprocessed_EEG
 
-# split the data to train/validate/test
-X = EEG_stimuli
-y = Labels[0]
+X = preprocessing(EEG_baseline, EEG_stimuli)
+Y = Labels[0]   # Labels : 0 = Valence, 1 = Arousal, 2 = Dominance
 
-kernels, chans, samples = 1, 14, 7808
 
+# split the data to train/validate/test -> 50 : 25 : 25 (207 : 103 : 104)
 X_train, X_validate, Y_train, Y_validate = train_test_split(
-    X, y, test_size=0.3, random_state=42)
+    X, Y, test_size=0.5, random_state=42)
 X_validate, X_test, Y_validate, Y_test = train_test_split(
-    X_validate, Y_validate, test_size=0.3, random_state=42)
+    X_validate, Y_validate, test_size=0.5, random_state=42)
+
+
 
 
 ############################# EEGNet portion ##################################
@@ -49,8 +53,10 @@ Y_train = np_utils.to_categorical(Y_train, num_classes=2)
 Y_validate = np_utils.to_categorical(Y_validate, num_classes=2)
 Y_test = np_utils.to_categorical(Y_test, num_classes=2)
 
+
 # convert data to NHWC (trials, channels, samples, kernels) format. Data
 # contains 60 channels and 151 time-points. Set the number of kernels to 1.
+kernels, chans, samples = 1, 14, 7808
 X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
 X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
 X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
