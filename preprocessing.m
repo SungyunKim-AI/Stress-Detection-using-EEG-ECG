@@ -8,28 +8,49 @@
 filepath = 'C:\Users\user\Desktop\Graduation-Project\DREAMER.mat';
 % filepath = '/Users/kok_ksy/Documents/GitHub/Graduation-Project/DREAMER.mat';
 Dataset = load(filepath);
-subjects = Dataset.DREAMER.Data;
+NumOfSub = 23;      % 실험 대상의 수
+NumOfClip = 18;     % 비디오 클립 수
+SamplingRate = 128;
+
+FilterOrder = 212;
+overallFilter = [30 4];
+thetaFilter = [8 4];
+alphaFilter = [13 8];
+betaFilter = [30 12];
+
 eeglab;
 
-tmpSub = subjects(1,1);
-subject = tmpSub{1};
-baseline = subject.EEG.baseline(1,1);
-baseline = baseline{1}.';
-stimuli = subject.EEG.stimuli(1,1);
-stimuli = stimuli{1}.';
-
-NumOfSub = 23;
-NumOfClip = 18;
-
+% 0. Data import
 for sub = 1:NumOfSub
+    subject = Dataset.DREAMER.Data(1,sub);
+    
     for clip = 1:NumOfClip
+        baseline = subject{1}.EEG.baseline(clip,1);
+        baseline = baseline{1}.';
+        EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',SamplingRate,'pnts',0,'xmin',0);
+        EEG = pop_firws(EEG, 'fcutoff', overallFilter, 'ftype', 'bandpass', 'wtype', 'hamming', 'forder', FilterOrder, 'minphase', 0, 'usefftfilt', 0, 'plotfresp', 0, 'causal', 0);
+        setname = char("baseline" + sub + "_" + clip);
+        [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname',setname,'gui','off');
+        
+        stimuli = subject{1}.EEG.stimuli(clip,1);
+        stimuli = stimuli{1}.';
+        stimuli(:,1:end - 7808) = [];
+        EEG = pop_importdata('dataformat','array','nbchan',0,'data','stimuli','srate',SamplingRate,'pnts',0,'xmin',0);
+        EEG = pop_firws(EEG, 'fcutoff', overallFilter, 'ftype', 'bandpass', 'wtype', 'hamming', 'forder', FilterOrder, 'minphase', 0, 'usefftfilt', 0, 'plotfresp', 0, 'causal', 0);
+        setname = char("stimuli" + sub + "_" + clip);
+        [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname',setname,'gui','off');
     end
 end
 
-% 0. Data import
-%EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',128,'pnts',0,'xmin',0);
+% 데이터셋 저장
+EEG = eeg_checkset( EEG );
+saveFilePath = 'C:\\Users\\user\\Desktop\\김성윤_졸프\\eeglab2020_0\\sample_data\\';
+EEG = pop_saveset( EEG, 'filename','test.set','filepath', saveFilePath);
+[ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
 
-% % 1. Hamming sinc linear phase FIR filters : 4 ~ 30Hz
+
+
+% 1. Hamming sinc linear phase FIR filters : 4 ~ 30Hz
 % EEG = pop_firws(EEG, 'fcutoff', [30 4], 'ftype', 'bandpass', 'wtype', 'hamming', 'forder', 48, 'minphase', 0, 'usefftfilt', 0, 'plotfresp', 0, 'causal', 0);
 % [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname','filted_baseline','gui','off'); 
 % EEG = pop_firws(EEG, 'fcutoff', [8 4], 'ftype', 'bandpass', 'wtype', 'hamming', 'forder', 48, 'minphase', 0, 'usefftfilt', 0, 'plotfresp', 0, 'causal', 0);
