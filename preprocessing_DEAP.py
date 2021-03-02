@@ -24,7 +24,7 @@ subjectList = ['01','02','03','04','05','06','07','08','09',
                 '10','11','12','13','14','15','16','17','18','19',
                 '20','21','22','23','24','25','26','27','28','29',
                 '30','31','32']
-path_to_dataset = '/Users/user/Desktop/김성윤_졸프/DEAP dataset/data_preprocessed_python/'
+path_to_dataset = '/Users/user/Desktop/DEAP dataset/data_preprocessed_python/'
 save_path = '/Users/user/Desktop/DEAP_dataset2/'
 
 

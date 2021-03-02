@@ -136,7 +136,7 @@ def EEGNet(nb_classes, Chans = 64, Samples = 128,
                                    use_bias = False, padding = 'same')(block1)
     block2       = BatchNormalization()(block2)
     block2       = Activation('elu')(block2)
-    block2       = AveragePooling2D((1, 8))(block2)
+    block2       = AveragePooling2D((1, 4))(block2)
     block2       = dropoutType(dropoutRate)(block2)
         
     flatten      = Flatten(name = 'flatten')(block2)

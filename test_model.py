@@ -24,6 +24,31 @@ from sklearn.model_selection import train_test_split    # data set split
 from test_dataloader import test_dataloader
 
 
+# loss 그래프 그리기
+def plot_loss_curve(history):
+
+    plt.figure(figsize=(15, 10))
+
+    plt.plot(history['loss'])
+    plt.plot(history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
+    plt.show()
+   
+# accuracy 그래프 그리기
+def plot_acc_curve(history):
+    plt.figure(figsize=(15, 10))
+    plt.plot(history['accuracy'])
+    plt.plot(history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
+    plt.show()
+
+
 # Data Loading
 EEG_stimuli, Labels = test_dataloader()
 
@@ -96,7 +121,7 @@ checkpointer = ModelCheckpoint(
 # fittedModel = model.fit(X_train, Y_train, batch_size=16, epochs=300,
 #                         verbose=2, validation_data=(X_validate, Y_validate),
 #                         callbacks=[checkpointer], class_weight=class_weights)
-fittedModel = model.fit(X_train, Y_train, batch_size=10, epochs=300,
+fittedModel = model.fit(X_train, Y_train, batch_size=20, epochs=500,
                         verbose=2, validation_data=(X_validate, Y_validate),
                         callbacks=[checkpointer])
 
@@ -150,10 +175,16 @@ acc2 = np.mean(preds_rg == Y_test.argmax(axis=-1))
 print("Classification accuracy: %f " % (acc2))
 
 # plot the confusion matrices for both classifiers
-names = ['audio left', 'audio right', 'vis left', 'vis right']
-plt.figure(0)
-plot_confusion_matrix(preds, Y_test.argmax(axis=-1), names, title='EEGNet-8,2')
+# names = ['audio left', 'audio right', 'vis left', 'vis right']
+# plt.figure(0)
+# plot_confusion_matrix(preds, Y_test.argmax(axis=-1), names, title='EEGNet-8,2')
 
-plt.figure(1)
-plot_confusion_matrix(preds_rg, Y_test.argmax(
-    axis=-1), names, title='xDAWN + RG')
+# plt.figure(1)
+# plot_confusion_matrix(preds_rg, Y_test.argmax(
+#     axis=-1), names, title='xDAWN + RG')
+
+plot_loss_curve(fittedModel.history)
+plot_acc_curve(fittedModel.history)
+
+
+
