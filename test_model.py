@@ -21,25 +21,18 @@ from sklearn.linear_model import LogisticRegression
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split    # data set split
 # data load from dataloader.py
-from dataloader import dataloader
+from test_dataloader import test_dataloader
 
 
 # Data Loading
-EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
-
-# Preprocessing
+EEG_stimuli, Labels = test_dataloader()
 
 
-def preprocessing(EEG_stimuli):
-    preprocessed_EEG = EEG_stimuli
-    """ 
-        TO DO..... 
-                    """
-    return preprocessed_EEG
-
-
-X = preprocessing(EEG_baseline, EEG_stimuli)
+X = EEG_stimuli
 Y = Labels[0]   # Labels : 0 = Valence, 1 = Arousal, 2 = Dominance
+
+print(X.shape)
+print(Y.shape)
 
 
 # split the data to train/validate/test -> 60 : 20 : 20 (248 : 83 : 83)
@@ -59,7 +52,7 @@ Y_test = np_utils.to_categorical(Y_test, num_classes=2)
 
 # convert data to NHWC (trials, channels, samples, kernels) format. Data
 # contains 60 channels and 151 time-points. Set the number of kernels to 1.
-kernels, chans, samples = 1, 14, 7808
+kernels, chans, samples = 1, 14, 8064
 X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
 X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
 X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)

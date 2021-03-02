@@ -31,7 +31,7 @@ save_path = '/Users/user/Desktop/DEAP_dataset2/'
 def Preprocessing (channel, band, window_size, step_size, sample_rate):
     print("Preprocessing...")
     data = np.zeros((40, 32, 14, 8064))    # data np array (video/trial x subjects x channel x data)
-    labels = np.zeros((40, 32, 4))       # labels np array (label (valence, arousal, dominance, liking) x subjects)
+    labels = np.zeros((40, 32, 4))         # labels np array (label (valence, arousal, dominance, liking) x subjects)
     
     for subIdx in range (0, 32):
         print("Subject ( ", (subIdx + 1), " / 32 )")
@@ -44,6 +44,8 @@ def Preprocessing (channel, band, window_size, step_size, sample_rate):
             for videoIdx in range (0, videos):
                 tempData = np.array(subject["data"][videoIdx])
                 tempLabels = np.array(subject["labels"][videoIdx])
+                tempLabels[tempLabels < 5] = 0
+                tempLabels[tempLabels >= 5] = 1
                 labels[videoIdx][subIdx][:] = tempLabels
 
                 for i, channelIdx in enumerate(channel):
