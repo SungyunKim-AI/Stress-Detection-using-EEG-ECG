@@ -66,4 +66,3 @@ def Preprocessing (channel, band, window_size, step_size, sample_rate):
     
 
 Preprocessing(channel, band, window_size, step_size, sample_rate)
-

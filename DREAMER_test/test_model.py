@@ -17,24 +17,47 @@ from pyriemann.utils.viz import plot_confusion_matrix
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LogisticRegression
 
-from matplotlib import pyplot as plt                    # tools for plotting confusion matrices
+# tools for plotting confusion matrices
+from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split    # data set split
-from dataloader import dataloader                       # data load from dataloader.py
+# data load from dataloader.py
+from test_dataloader import test_dataloader
+
+
+# loss 그래프 그리기
+def plot_loss_curve(history):
+
+    plt.figure(figsize=(15, 10))
+
+    plt.plot(history['loss'])
+    plt.plot(history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
+    plt.show()
+   
+# accuracy 그래프 그리기
+def plot_acc_curve(history):
+    plt.figure(figsize=(15, 10))
+    plt.plot(history['accuracy'])
+    plt.plot(history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
+    plt.show()
 
 
 # Data Loading
-EEG_baseline, EEG_stimuli, ECG_baseline, ECG_stimuli, Labels = dataloader()
+EEG_stimuli, Labels = test_dataloader()
 
-# Preprocessing
-def preprocessing(EEG_baseline, EEG_stimuli):
-    preprocessed_EEG = EEG_stimuli
-    """ 
-        TO DO..... 
-                    """
-    return preprocessed_EEG
 
-X = preprocessing(EEG_baseline, EEG_stimuli)
+X = EEG_stimuli
 Y = Labels[0]   # Labels : 0 = Valence, 1 = Arousal, 2 = Dominance
+
+print(X.shape)
+print(Y.shape)
 
 
 # split the data to train/validate/test -> 60 : 20 : 20 (248 : 83 : 83)
@@ -42,7 +65,6 @@ X_train, X_validate, Y_train, Y_validate = train_test_split(
     X, Y, test_size=0.4, random_state=42)
 X_validate, X_test, Y_validate, Y_test = train_test_split(
     X_validate, Y_validate, test_size=0.5, random_state=42)
-
 
 
 ############################# EEGNet portion ##################################
@@ -55,7 +77,7 @@ Y_test = np_utils.to_categorical(Y_test, num_classes=2)
 
 # convert data to NHWC (trials, channels, samples, kernels) format. Data
 # contains 60 channels and 151 time-points. Set the number of kernels to 1.
-kernels, chans, samples = 1, 14, 7808
+kernels, chans, samples = 1, 14, 8064
 X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
 X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
 X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
@@ -70,13 +92,15 @@ model = EEGNet(nb_classes=2, Chans=chans, Samples=samples,
                dropoutType='Dropout')
 
 # compile the model and set the optimizers
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam', metrics=['accuracy'])
 
 # count number of parameters in the model
 numParams = model.count_params()
 
 # set a valid path for your system to record model checkpoints
-checkpointer = ModelCheckpoint(filepath='/tmp/checkpoint.h5', verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint(
+    filepath='/tmp/checkpoint.h5', verbose=1, save_best_only=True)
 
 ###############################################################################
 # if the classification task was imbalanced (significantly more trials in one
@@ -97,7 +121,7 @@ checkpointer = ModelCheckpoint(filepath='/tmp/checkpoint.h5', verbose=1, save_be
 # fittedModel = model.fit(X_train, Y_train, batch_size=16, epochs=300,
 #                         verbose=2, validation_data=(X_validate, Y_validate),
 #                         callbacks=[checkpointer], class_weight=class_weights)
-fittedModel = model.fit(X_train, Y_train, batch_size=10, epochs=300,
+fittedModel = model.fit(X_train, Y_train, batch_size=20, epochs=500,
                         verbose=2, validation_data=(X_validate, Y_validate),
                         callbacks=[checkpointer])
 
@@ -151,10 +175,16 @@ acc2 = np.mean(preds_rg == Y_test.argmax(axis=-1))
 print("Classification accuracy: %f " % (acc2))
 
 # plot the confusion matrices for both classifiers
-names = ['audio left', 'audio right', 'vis left', 'vis right']
-plt.figure(0)
-plot_confusion_matrix(preds, Y_test.argmax(axis=-1), names, title='EEGNet-8,2')
+# names = ['audio left', 'audio right', 'vis left', 'vis right']
+# plt.figure(0)
+# plot_confusion_matrix(preds, Y_test.argmax(axis=-1), names, title='EEGNet-8,2')
 
-plt.figure(1)
-plot_confusion_matrix(preds_rg, Y_test.argmax(
-    axis=-1), names, title='xDAWN + RG')
+# plt.figure(1)
+# plot_confusion_matrix(preds_rg, Y_test.argmax(
+#     axis=-1), names, title='xDAWN + RG')
+
+plot_loss_curve(fittedModel.history)
+plot_acc_curve(fittedModel.history)
+
+
+
