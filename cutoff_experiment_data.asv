@@ -36,8 +36,8 @@ ECG_SamplingRage = 51.2;     % Shimmer 3 Sampline Rate (Hz 단위)
 
 load_path_EEG = "C:\\Users\\user\\Desktop\\Experiment Data\\EEG\\";
 load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG\\";
-save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
-save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
+save_path_EEG = "C:\\Users\\user\\Desktop\\\\preprocessed_cutoff\\EEG\\";
+save_path_ECG = "C:\\Users\\user\\Desktop\\preprocessed_cutoff\\ECG\\";
 % =========================================================================
 
 

@@ -21,9 +21,9 @@ Filter = {[30 4], [8 4], [13 8], [30 12]};
 FilterName = {'overall', 'theta', 'alpha', 'beta'};
 
 load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
-load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
-save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG";
-save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\ECG";
+load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG\\";
+save_path_EEG = "C:\\Users\\user\\Desktop\\band_filter_preprocessed\\EEG";
+save_path_ECG = "C:\\Users\\user\\Desktop\\band_filter_preprocessed\\ECG";
 eeglab;
 %==========================================================================
 
@@ -33,7 +33,6 @@ for sub = 1:noOfSubjects
         % Data import
         fileName = char(load_path_EEG + "baseline\\s" + sub + "_" + sample + ".csv");
         baseline = readtable(fileName);
-        baseline = baseline{:,:};
         baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',EEG_samplingRate,'pnts',0,'xmin',0);
         
         % Hamming sinc linear phase FIR filters
