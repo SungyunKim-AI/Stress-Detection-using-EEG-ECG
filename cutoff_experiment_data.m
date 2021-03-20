@@ -5,8 +5,6 @@
 % restEnd : 휴식 종료 시간 (초 단위)
 % cptStart : CPT 시작 시간 (초 단위)
 
-
-noOfSamples = 10;
 % => subject1 : 김찬우
 % subject = 1;
 % experimentTime = [195, 190, 196, 195, 210, 195, 200, 195, 195, 205];
@@ -31,8 +29,8 @@ noOfSamples = 10;
 % restEnd =        [120, 120, 120, 120, 120, 135, 120, 120, 121, 121];
 % cptStart =       [122, 123, 122, 120, 120, 137, 122, 122, 121, 124];
 
-EEG_SamplingRate = 128;      % Emotive EpocX Sampling Rate (Hz 단위)
-ECG_SamplingRage = 51.2;     % Shimmer 3 Sampline Rate (Hz 단위)
+noOfSamples = 10;
+SamplingRate_EEG = 128;      % Emotive EpocX Sampling Rate (Hz 단위)
 
 load_path_EEG = "C:\\Users\\user\\Desktop\\Experiment Data\\EEG\\";
 load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG\\";
@@ -55,10 +53,10 @@ for i = 1:noOfSamples
     EEG_data = readtable(file_path,"VariableNamingRule","preserve");
 
     % Data Cut-off
-    experimentTime(i) = experimentTime(i) * EEG_SamplingRate;
+    experimentTime(i) = experimentTime(i) * SamplingRate_EEG;
     exData = EEG_data{1:experimentTime(i), [1,4:17]};  % table 데이터를 matrix 데이터로 변경  
-    cptStart(i) = cptStart(i) * EEG_SamplingRate;
-    restEnd(i) = restEnd(i) * EEG_SamplingRate;
+    cptStart(i) = cptStart(i) * SamplingRate_EEG;
+    restEnd(i) = restEnd(i) * SamplingRate_EEG;
     stimuli_eeg = exData(cptStart(i):end, :);          % baseline
     baseline_eeg = exData(1:restEnd(i),:);             % stimuli
 
