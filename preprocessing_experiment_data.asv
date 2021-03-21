@@ -11,8 +11,8 @@
 
 noOfSubjects = 5;           % 실험 대상 수
 noOfSamples = 10;           % 실험 수
-samplingRate_EEG = 128;     % EEG Sampling Rate (Hz)
-samplingRate_ECG = 51.2;    % ECG Sampling Rate (Hz)
+EEG_samplingRate = 128;     % EEG Sampling Rate (Hz)
+ECG_samplingRate = 51.2;    % ECG Sampling Rate (Hz)
 
 % Bandpass Filter
 % 1: overall, 2: theta, 3: alpha, 4: beta 
@@ -21,9 +21,9 @@ Filter = {[30 4], [8 4], [13 8], [30 12]};
 FilterName = {'overall', 'theta', 'alpha', 'beta'};
 
 load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
-load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
-save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG";
-save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\ECG";
+load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG\\";
+save_path_EEG = "C:\\Users\\user\\Desktop\\band_filter_preprocessed\\EEG";
+save_path_ECG = "C:\\Users\\user\\Desktop\\band_filter_preprocessed\\ECG";
 eeglab;
 %==========================================================================
 
@@ -33,11 +33,11 @@ for sub = 1:noOfSubjects
         % Data import
         fileName = char(load_path_EEG + "baseline\\s" + sub + "_" + sample + ".csv");
         baseline = readtable(fileName);
-        baseline = baseline{:,:}.';
-        baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',samplingRate_EEG,'pnts',0,'xmin',0);
+        baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',EEG_samplingRate,'pnts',0,'xmin',0);
         
         % Hamming sinc linear phase FIR filters
-        baseline_EEG = pop_eegfiltnew(baseline_EEG, 'locutoff',4,'hicutoff',30,'plotfreqz',0);
+        baseline_EEG = pop_firws(baseline_EEG, 'fcutoff', Filter{1}, 'ftype', 'bandpass', 'wtype', 'hamming', 'forder', FilterOrder, 'minphase', 0, 'usefftfilt', 0, 'plotfresp', 0, 'causal', 0);
+        
         
         % 1. CAR (Common Average Reference)
         baseline_EEG = pop_reref(baseline_EEG, []);
