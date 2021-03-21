@@ -3,6 +3,8 @@ DREAMER.mat
 
 # 라이브러리 파일
 src/
+ECG/
+ECG_512/
 
 # VSCode
 .vscode/*
