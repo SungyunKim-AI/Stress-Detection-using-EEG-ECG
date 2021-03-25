@@ -62,7 +62,7 @@
 %  ECG_Clean :  processed signal without BLW
 
 Fc = 0.667;
-Fs = 512;
+Fs = 51.2;
 fcuts = [(Fc-0.07) (Fc)];
 mags = [0 1];
 devs = [0.005 0.001];
@@ -70,18 +70,18 @@ a = 1;
 load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG";
 save_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean";
 
-% for subject = 6:9
-%     
-%     if subject == 2
-%         continue;
-%     end
-    subject = 10;
+for sub = 1:9
+    
+    if sub == 2
+        continue;
+    end
+    
     for sample = 1:10
-        file_path = char(load_path_ECG + "\\s" + subject + "_" + sample + ".csv");
+        file_path = char(load_path_ECG + "\\s" + sub + "_" + sample + ".csv");
         dataTable = readtable(file_path,"VariableNamingRule","preserve");
-        data = dataTable{:,:};
+        data = dataTable{:,4:6};
         
-        for i = 4:6
+        for i = 1:3
             ecgy = data(:,i);
             [n,Wn,beta,ftype] = kaiserord(fcuts,mags,devs,Fs);
             b = fir1(n,Wn,ftype,kaiser(n+1,beta),'noscale');
@@ -92,10 +92,10 @@ save_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean";
             subplot (2,1,2), plot(data(:,i)), title ('ECG Signal after baseline wander REMOVED'), grid on
         end
         
-        fileName = char(save_path_ECG + "\\s" + subject + "_" + sample + ".csv");
+        fileName = char(save_path_ECG + "\\s" + sub + "_" + sample + ".csv");
         writematrix(data, fileName);
     end
-% end
+end
 
 
 

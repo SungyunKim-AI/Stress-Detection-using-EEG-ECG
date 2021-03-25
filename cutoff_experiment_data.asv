@@ -57,7 +57,7 @@ noOfSamples = 10;
 SamplingRate_EEG = 128;      % Emotive EpocX Sampling Rate (Hz 단위)
 
 load_path_EEG = "C:\\Users\\user\\Desktop\\Experiment Data\\EEG\\";
-load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean\\";
+load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG\\";
 save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
 save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
 % =========================================================================
@@ -140,14 +140,12 @@ for i = 1:noOfSamples
 
     % Data Cut-off
     ECG_data(ECG_timeIndex(2):ECG_timeIndex(3), :) = [];
-    bw_data = ECG_data{:,4:6};
-    
     baseline_ecg = ECG_data{ECG_timeIndex(1):ECG_timeIndex(2), 4:6};    % baseline
     adjustIndex = ECG_timeIndex(3) - ECG_timeIndex(2) - 1;
     ECG_timeIndex(3) = ECG_timeIndex(3) - adjustIndex;
     ECG_timeIndex(4) = ECG_timeIndex(4) - adjustIndex;
     stimuli_ecg = ECG_data{ECG_timeIndex(3):ECG_timeIndex(4), 4:6};     % stimuli
-    
+    temp
     
     fprintf('ECG baseline size :');
     disp(size(baseline_ecg));
