@@ -12,8 +12,10 @@ fcuts = [0.5 1.0 45 46];
 mags = [0 1 0];
 devs = [0.05 0.01 0.05];
 
-load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG";
-save_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean";
+% load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG";
+% save_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean";
+load_path_ECG = "C:\\Users\\sungy\\Desktop\\Experiment Data\\ECG";
+save_path_ECG = "C:\\Users\\sungy\\Desktop\\Experiment Data\\ECG_Clean";
 
  for subject = 6:10
 
@@ -31,6 +33,7 @@ save_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG_Clean";
             filtedData = filtfilt(hh,1,data(:,i));
             
             % 2. Detect the R peaks of the QRS complex
+            % 함수 출처 : https://github.com/danielwedekind/qrsdetector/tree/d0efea0d883ea329b1110d3fa51802458d71f3b1
             [qrs_pos,filt_data,int_data,thF1,thI1] = pantompkins_qrs(filtedData, Fs);
             
             % 3. Remove the abnormal RRI
