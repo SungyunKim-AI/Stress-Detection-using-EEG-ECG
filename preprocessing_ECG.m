@@ -6,20 +6,6 @@
 % 4. NN (normal-to-normal) interval : Zero-one tranformation (R peaks = 1, others = 0)
 % 5. Lomb Periodogram (0.04 to 20 Hz was adopted)
 
-% numOfSubjects = 5;
-% numOfSamples = 10;
-% samplingRate_ECG = 51.2;
-% load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
-% save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\";
-
-
-%  BLW removal method based on FIR Filter
-%
-%  ecgy:        the contamined signal
-%  Fc:          cut-off frequency
-%  Fs:          sample frequiency
-%  ECG_Clean :  processed signal without BLW
-
 
 Fs = 512;
 fcuts = [0.5 1.0 45 46];

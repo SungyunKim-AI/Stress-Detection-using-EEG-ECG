@@ -16,3 +16,4 @@ ECG_512/
 #Cache
 __pycache__
 .vscode/settings.json
+*.asv
