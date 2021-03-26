@@ -1,5 +1,3 @@
-
-
 from load_ecg_data import load_ecg_data
 import numpy as np
 import tensorflow as tf
