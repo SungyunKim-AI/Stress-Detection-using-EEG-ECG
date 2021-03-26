@@ -151,12 +151,12 @@ ECG = np.array(ECG)
 Labels = np.array(Labels)
 
 X_train, X_validate, Y_train, Y_validate = train_test_split(
-    ECG, Labels, test_size=0.3, random_state=42)
+    ECG, Labels, test_size=0.4, random_state=42)
 X_validate, X_test, Y_validate, Y_test = train_test_split(
     X_validate, Y_validate, test_size=0.5, random_state=42)
 
 
-kernels, chans, samples = 1, 1, 2900
+kernels, chans, samples = 1, 1, 10240
 
 X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
 X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
@@ -173,8 +173,12 @@ with tf.device('GPU:0'):
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
 
-    fittedModel = model.fit(X_train, Y_train, batch_size=1, epochs=200,
-                            verbose=2, validation_data=(X_validate, Y_validate),)
+    print(X_train.shape)
+    print(X_validate.shape)
+
+
+    fittedModel = model.fit(X_train, Y_train, batch_size=1, epochs=500,
+                            verbose=2, validation_data=(X_validate, Y_validate))
 
     probs = model.predict(X_test)
     preds = probs.argmax(axis=-1)

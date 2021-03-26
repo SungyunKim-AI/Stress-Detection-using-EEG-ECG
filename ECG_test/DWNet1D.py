@@ -10,7 +10,10 @@ from keras import regularizers
 
 
 def first_level(input_layer):
+    print("first level input layer : ",input_layer.shape)
     input_layer = input_layer[0]
+    print("first level input layer[0] : ",input_layer.shape)
+
     index = 0
     _filters = 15
     _padding = "same"

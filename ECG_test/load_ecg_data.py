@@ -24,21 +24,24 @@ def load_ecg_data():
 
     # 데이터 경로 설정
     baseline_paths = glob.glob(
-        "C:/Users/kia34/문서/GitHub/Graduation-Project/ECG_test/ECG/baseline/*")
+        "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/*")
     stimuli_paths = glob.glob(
-        "C:/Users/kia34/문서/GitHub/Graduation-Project/ECG_test/ECG/stimuli/*")
+        "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/*")
 
     for path in baseline_paths:
         data = pd.read_csv(path, header=None)
-        data = data[:2900][0]
-        ECG.append(data)
-        Labels.append([1, 0])
+        for i in range(0,12):
+            part_data = data[i*512:10240+i*512][0]
+            ECG.append(part_data)
+            Labels.append([1, 0])
+        
 
     for path in stimuli_paths:
         data = pd.read_csv(path, header=None)
-        data = data[:2900][0]
-        ECG.append(data)
-        Labels.append([0, 1])
+        for i in range(0,12):
+            part_data = data[i*512:10240+i*512][0]
+            ECG.append(part_data)
+            Labels.append([0, 1])
 
     ECG = np.array(ECG)
     Labels = np.array(Labels)
