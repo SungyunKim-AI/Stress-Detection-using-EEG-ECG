@@ -7,7 +7,7 @@ def load_ecg_data():
 
     Fs = 512    # Sample Frequency (Hz)
     Ss = 20     # Sample second (sec)
-    step = 3    # Overlapping Step (sec)
+    step = 1    # Overlapping Step (sec)
     cptTime = 62
 
     # Dataset Path
@@ -36,10 +36,9 @@ def load_ecg_data():
     ECG = np.array(ECG)
     Labels = np.array(Labels)
 
-    print(ECG.shape)
-    print(Labels.shape)
+    print("ECG Data Shape : ", ECG.shape)
+    print("Labels Shape : ", Labels.shape)
 
     return ECG, Labels
 
-
-load_ecg_data()
+#load_ecg_data()

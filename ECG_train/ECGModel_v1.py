@@ -7,11 +7,11 @@ from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D, Dense, Flatten,
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 
 
-def model_v1():
+def ECGModel_v1(samples):
 
     # 모델 구성하기
     make_model = Sequential([
-        Input(shape=(10240, 1), name='input_layer'),
+        Input(shape=(samples, 1), name='input_layer'),
         Conv1D(
             filters=30,
             kernel_size=10,
@@ -59,5 +59,5 @@ def model_v1():
     return make_model
 
 
-model = generate_model()
-model.summary()
+# model = ECGModel_v1()
+# model.summary()
