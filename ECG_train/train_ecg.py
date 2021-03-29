@@ -46,7 +46,7 @@ fit_model = model.fit(
     X_train,
     Y_train,
     epochs=300,
-    batch_size=20,
+    batch_size=64,
     validation_data=(X_validate, Y_validate)
 )
 

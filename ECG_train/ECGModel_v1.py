@@ -28,7 +28,7 @@ def ECGModel_v1(samples):
             activation='relu',
             name='conv_layer2'
         ),
-        Dropout(0.1),
+        Dropout(0.15),
         Conv1D(
             filters=30,
             kernel_size=10,
@@ -48,6 +48,7 @@ def ECGModel_v1(samples):
             activation='relu',
             name='conv_layer4'
         ),
+        Dropout(0.15),
         MaxPooling1D(
             pool_size=4
         ),
