@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D, Dense, Flatten,
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 
 
-def generate_model():
+def model_v1():
 
     # 모델 구성하기
     make_model = Sequential([

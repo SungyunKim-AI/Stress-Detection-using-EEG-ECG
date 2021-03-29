@@ -1,11 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-
+# Loss Graph
 def plot_loss_curve(history):
-
     plt.figure(figsize=(15, 10))
-
     plt.plot(history['loss'])
     plt.plot(history['val_loss'])
     plt.title('model loss')
@@ -14,9 +12,8 @@ def plot_loss_curve(history):
     plt.legend(['train', 'test'], loc='upper right')
     plt.show()
 
-# accuracy 그래프 그리기
 
-
+# Accuracy Graph
 def plot_acc_curve(history):
     plt.figure(figsize=(15, 10))
     plt.plot(history['accuracy'])
@@ -28,6 +25,7 @@ def plot_acc_curve(history):
     plt.show()
 
 
+# Normalization
 def normalization(X, hypes):
     print("Normalizing...")
     if hypes == "01":

@@ -1,4 +1,6 @@
 from load_ecg_data import load_ecg_data
+from utils import plot_loss_curve, plot_acc_curve, normalization
+
 import numpy as np
 import tensorflow as tf
 
@@ -9,8 +11,6 @@ from mne import io
 # tools for plotting confusion matrices
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
-
-from utils import plot_loss_curve, plot_acc_curve, normalization
 
 
 ECG, Labels = load_ecg_data()

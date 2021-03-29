@@ -15,10 +15,6 @@ from ecg_model import generate_model
 
 
 ECG, Labels = load_ecg_data()
-#ECG = normalization(ECG, "01")
-
-#ECG = np.array(ECG)
-#Labels = np.array(Labels)
 
 X_train, X_validate, Y_train, Y_validate = train_test_split(
     ECG, Labels, test_size=0.3, random_state=42)
@@ -34,7 +30,7 @@ X_test = X_test.reshape(X_test.shape[0], samples, chans)
 
 ###################### model ######################
 
-model = generate_model()
+model = model_v1()
 
 model.compile(
     loss='categorical_crossentropy',
