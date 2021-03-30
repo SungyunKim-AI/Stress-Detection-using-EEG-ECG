@@ -13,7 +13,7 @@ def ECGModel_v1(samples):
     make_model = Sequential([
         Input(shape=(samples, 1), name='input_layer'),
         Conv1D(
-            filters=30,
+            filters=256,
             kernel_size=10,
             strides=1,
             padding="same",
@@ -21,16 +21,16 @@ def ECGModel_v1(samples):
             name='conv_layer1'
         ),
         Conv1D(
-            filters=30,
+            filters=256,
             kernel_size=10,
             strides=1,
             padding="same",
             activation='relu',
             name='conv_layer2'
         ),
-        Dropout(0.15),
+        Dropout(0.2),
         Conv1D(
-            filters=30,
+            filters=256,
             kernel_size=10,
             strides=1,
             padding="same",
@@ -41,14 +41,14 @@ def ECGModel_v1(samples):
             pool_size=2
         ),
         Conv1D(
-            filters=30,
-            kernel_size=3,
+            filters=128,
+            kernel_size=10,
             strides=1,
             padding="same",
             activation='relu',
             name='conv_layer4'
         ),
-        Dropout(0.15),
+        Dropout(0.2),
         MaxPooling1D(
             pool_size=4
         ),
