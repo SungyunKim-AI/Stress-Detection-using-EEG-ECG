@@ -8,7 +8,7 @@ def load_ecg_data():
 
     Fs = 512    # Sample Frequency (Hz)
     Ss = 30     # Sample second (sec)
-    step = 3    # Overlapping Step (sec)
+    step = 2    # Overlapping Step (sec)
 
     # Dataset Path
     baseline_paths = glob.glob(
