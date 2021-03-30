@@ -12,7 +12,6 @@
 noOfSubjects = 5;           % 실험 대상 수
 noOfSamples = 10;           % 실험 수
 samplingRate_EEG = 128;     % EEG Sampling Rate (Hz)
-samplingRate_ECG = 51.2;    % ECG Sampling Rate (Hz)
 filter = ["overall", "theta", "alpha", "beta"];
 eeglab;
 %==========================================================================
@@ -20,11 +19,11 @@ eeglab;
 % ================ Hamming sinc linear phase FIR filters =================
 % load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
 % save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG\\";
-% 
-% for subject = 1:noOfSubjects
-%     if subject == 2
-%         continue;
-%     end
+%
+% for subject = 6:10
+% %     if subject == 2
+% %         continue;
+% %     end
 %     
 %     for sample = 1:noOfSamples
 %         % => baseline
@@ -116,10 +115,10 @@ eeglab;
 load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG\\";
 save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ASR_CAR_preprocessed\\EEG\\";
 
-for subject = 1:noOfSubjects
-    if subject == 2
-        continue;
-    end
+for subject = 6:10
+%     if subject == 2
+%         continue;
+%     end
  
     for sample = 1:noOfSamples
         for i = 1:4

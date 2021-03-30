@@ -14,7 +14,7 @@ from load_ecg_data import load_ecg_data
 from ECGModel_v1 import ECGModel_v1
 
 # Load ECG Data
-ECG, Labels = load_ecg_data()
+ECG, Labels, numOfBaseline, numOfStimuli = load_ecg_data()
 
 kernels, chans, samples = 1, 1, ECG.shape[1]
 
@@ -36,6 +36,8 @@ print("Test Set Shape : ", X_test.shape)
 
 model = ECGModel_v1(samples)
 
+
+
 model.compile(
     loss='categorical_crossentropy',
     optimizer='adam',
@@ -46,7 +48,7 @@ fit_model = model.fit(
     X_train,
     Y_train,
     epochs=300,
-    batch_size=64,
+    batch_size=10,
     validation_data=(X_validate, Y_validate)
 )
 
