@@ -46,5 +46,4 @@ def load_eeg_data():
 
     return EEG, Labels, numOfBaseline, numOfStimuli
 
-[EEG, Labels, numOfBaseline, numOfStimuli] = load_eeg_data()
-
+# [EEG, Labels, numOfBaseline, numOfStimuli] = load_eeg_data()
