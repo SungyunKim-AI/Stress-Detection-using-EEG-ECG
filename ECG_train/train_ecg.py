@@ -12,11 +12,14 @@ from sklearn.model_selection import train_test_split
 from utils import plot_loss_curve, plot_acc_curve, normalization
 from load_ecg_data import load_ecg_data
 from ECGModel_v1 import ECGModel_v1
+from ECGModel_v2 import DeepConvNet     # DeepConvNet
 
 # Load ECG Data
+channels = [0,1,2]
+#channels = 2
 ECG, Labels, numOfBaseline, numOfStimuli, samples = load_ecg_data()
 
-kernels, chans = 1, 1
+kernels, chans = 1, 3
 
 # Train : Validate : Test = 7 : 1.5 : 1.5
 X_train, X_validate, Y_train, Y_validate = train_test_split(
@@ -24,9 +27,15 @@ X_train, X_validate, Y_train, Y_validate = train_test_split(
 X_validate, X_test, Y_validate, Y_test = train_test_split(
     X_validate, Y_validate, test_size=0.5, random_state=42)
 
-X_train = X_train.reshape(X_train.shape[0], samples, chans)
-X_validate = X_validate.reshape(X_validate.shape[0], samples, chans)
-X_test = X_test.reshape(X_test.shape[0], samples, chans)
+# 1D
+# X_train = X_train.reshape(X_train.shape[0], samples, chans)
+# X_validate = X_validate.reshape(X_validate.shape[0], samples, chans)
+# X_test = X_test.reshape(X_test.shape[0], samples, chans)
+
+# 2D
+X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
+X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
+X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 
 print("Train Set Shape : ", X_train.shape)
 print("Validate Set Shape : ", X_validate.shape)
@@ -34,7 +43,8 @@ print("Test Set Shape : ", X_test.shape)
 
 ###################### model ######################
 
-model = ECGModel_v1(samples)
+# model = ECGModel_v1(samples)
+model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
 
 
 model.compile(
@@ -47,9 +57,15 @@ fit_model = model.fit(
     X_train,
     Y_train,
     epochs=300,
-    batch_size=10,
+    batch_size=16,
     validation_data=(X_validate, Y_validate)
 )
+
+# make prediction on test set.
+probs = model.predict(X_test)
+preds = probs.argmax(axis = -1)  
+acc   = np.mean(preds == Y_test.argmax(axis=-1))
+print("Classification accuracy: %f " % (acc))
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)

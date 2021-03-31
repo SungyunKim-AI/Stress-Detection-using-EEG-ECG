@@ -8,10 +8,15 @@ from mne import io
 # tools for plotting confusion matrices
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_score, recall_score, f1_score 
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 from load_eeg_data import load_eeg_data
-from EEGModel_v1 import EEGModel_v1
+
+# Import Models
+from model_EEGNet import EEGNet
+from model_DeepConvNet import DeepConvNet
+
 
 # Load ECG Data
 EEG, Labels, numOfBaseline, numOfStimuli, samples = load_eeg_data()
@@ -35,11 +40,11 @@ print("Test Set Shape : ", X_test.shape)
 
 ###################### model ######################
 
-model = EEGModel_v1(nb_classes = 2, Chans = chans, Samples = samples, 
-               dropoutRate = 0.5, kernLength = 32, F1 = 8, D = 2, F2 = 16, 
-               dropoutType = 'Dropout')
+# model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
+#                dropoutRate = 0.5, kernLength = 32, F1 = 8, D = 2, F2 = 16, 
+#                dropoutType = 'Dropout')
 
-
+model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
 
 model.compile(
     loss='categorical_crossentropy',
@@ -54,6 +59,13 @@ fit_model = model.fit(
     batch_size=16,
     validation_data=(X_validate, Y_validate)
 )
+
+# make prediction on test set.
+probs = model.predict(X_test)
+preds = probs.argmax(axis = -1)  
+acc   = np.mean(preds == Y_test.argmax(axis=-1))
+print("Classification accuracy: %f " % (acc))
+
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)

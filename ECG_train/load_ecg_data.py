@@ -30,8 +30,8 @@ def load_ecg_data():
 
             # data overlapping
             for i in range(0, int(data.shape[0]/Fs) - Ss + 1, step):
-                part_data = data[(i*Fs) : ((i+Ss)*Fs), 2]
-                ECG.append(part_data)
+                part_data = data[(i*Fs) : ((i+Ss)*Fs), :]
+                ECG.append(np.transpose(part_data))
 
                 # Labels one-hot encoding
                 if category == baseline_paths:
