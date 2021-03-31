@@ -14,9 +14,9 @@ from load_ecg_data import load_ecg_data
 from ECGModel_v1 import ECGModel_v1
 
 # Load ECG Data
-ECG, Labels, numOfBaseline, numOfStimuli = load_ecg_data()
+ECG, Labels, numOfBaseline, numOfStimuli, samples = load_ecg_data()
 
-kernels, chans, samples = 1, 1, ECG.shape[1]
+kernels, chans = 1, 1
 
 # Train : Validate : Test = 7 : 1.5 : 1.5
 X_train, X_validate, Y_train, Y_validate = train_test_split(
@@ -35,7 +35,6 @@ print("Test Set Shape : ", X_test.shape)
 ###################### model ######################
 
 model = ECGModel_v1(samples)
-
 
 
 model.compile(

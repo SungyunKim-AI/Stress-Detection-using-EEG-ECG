@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import glob
-
+from tqdm import tqdm
 
 def load_ecg_data():
     print("ECG Data Loading...")
@@ -9,16 +9,13 @@ def load_ecg_data():
     Fs = 512    # Sample Frequency (Hz)
     Ss = 30     # Sample second (sec)
     step = 2    # Overlapping Step (sec)
+    samples = Fs * Ss
 
     # Dataset Path
     baseline_paths = glob.glob(
         "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/*")
     stimuli_paths = glob.glob(
         "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/*")
-    # baseline_paths = glob.glob(
-    #     "C:/Users/kia34/문서/GitHub/Graduation-Project/ECG_test/ECG_512/baseline/*")
-    # stimuli_paths = glob.glob(
-    #     "C:/Users/kia34/문서/GitHub/Graduation-Project/ECG_test/ECG_512/stimuli/*")
 
     ECG = []
     Labels = []
@@ -26,13 +23,14 @@ def load_ecg_data():
     numOfBaseline = 0
     numOfStimuli = 0
     for category in [baseline_paths, stimuli_paths]:
-        for path in category:
-            data = pd.read_csv(path, header=None)
+        for path in tqdm(category):
+            dataset = pd.read_csv(path, header=None)
+            data_frames = pd.DataFrame(dataset)
+            data = np.array(data_frames.values)
 
             # data overlapping
-
-            for i in range(0, int(data.shape[0]/Fs) - Ss, step):
-                part_data = data[i*Fs: (i+Ss)*Fs][2]
+            for i in range(0, int(data.shape[0]/Fs) - Ss + 1, step):
+                part_data = data[(i*Fs) : ((i+Ss)*Fs), 2]
                 ECG.append(part_data)
 
                 # Labels one-hot encoding
@@ -51,7 +49,7 @@ def load_ecg_data():
     print("numOfBaseline : ", numOfBaseline)    # 1795
     print("numOfStimuli : ", numOfStimuli)      # 1157
 
-    return ECG, Labels, numOfBaseline, numOfStimuli
+    return ECG, Labels, numOfBaseline, numOfStimuli, samples
 
 
-load_ecg_data()
+#[ECG, Labels, numOfBaseline, numOfStimuli, samples] = load_ecg_data()
