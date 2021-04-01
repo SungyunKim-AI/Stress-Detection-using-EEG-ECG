@@ -8,7 +8,6 @@ from mne import io
 # tools for plotting confusion matrices
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_score, recall_score, f1_score 
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 from load_eeg_data import load_eeg_data

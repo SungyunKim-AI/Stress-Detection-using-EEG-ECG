@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 from load_ecg_data import load_ecg_data
-from ECGModel_v1 import ECGModel_v1
-from ECGModel_v2 import DeepConvNet     # DeepConvNet
+from model_ECGModel_v1 import ECGModel_v1
+from model_DeepConvNet import DeepConvNet     # DeepConvNet
 
 # Load ECG Data
 channels = [0,1,2]

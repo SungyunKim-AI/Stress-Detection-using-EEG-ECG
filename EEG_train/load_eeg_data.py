@@ -11,9 +11,13 @@ def load_eeg_data():
     step = 2    # Overlapping Step (sec)
     samples = Fs * Ss
 
-    # Dataset Path
-    baseline_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/*")
-    stimuli_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/alpha/*")
+    # Dataset Path _ ASR + CAR
+    # baseline_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/*")
+    # stimuli_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/alpha/*")
+
+    # Dataset Path _ CAR
+    baseline_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/baseline/alpha/*")
+    stimuli_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/stimuli/alpha/*")
 
     EEG = []
     Labels = []
