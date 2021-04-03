@@ -83,9 +83,12 @@ def load_eeg_data_2():
     y_Validate = []
 
     for category in range(2):
-        for subject in tqdm(range(Subjects)):
-            for sample in range(10):
-                path = baseline_paths + "s" + str(subject) + "_" + str(sample)
+        for subject in tqdm(range(1, Subjects+1)):
+            if subject == 2:
+                continue
+
+            for sample in range(1, 11):
+                path = baseline_paths + "s" + str(subject) + "_" + str(sample) + ".csv"
                 dataset = pd.read_csv(path, header=None)
                 data_frames = pd.DataFrame(dataset)
                 data = np.array(data_frames.values)
@@ -102,29 +105,34 @@ def load_eeg_data_2():
                         y_Test.append(label_append(category, subject))
                     else:
                         x_Train.append(part_data)
-                        y_Test.append(label_append(category, subject))
+                        y_Train.append(label_append(category, subject))
 
     [x_Train, y_Train] = data_shuffle(x_Train, y_Train)
     [x_Test, y_Test] = data_shuffle(x_Test, y_Test)
     [x_Validate, y_Validate] = data_shuffle(x_Validate, y_Validate)
 
-    print("Train Data Shape : ", x_Train.shape)       # (3032, )
-    print("Test Data Shape : ", x_Test.shape)
-    print("Validate Data Shape : ", x_Validate.shape)
+    print("Train Data Shape : ", x_Train.shape)         # (2868, 13, 5120)
+    print("Test Data Shape : ", x_Test.shape)           # (394, 13, 5120)
+    print("Validate Data Shape : ", x_Validate.shape)   # (400, 13, 5120)
+    print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
+    print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
+    print("Validate Labels Shape : ", y_Validate.shape) # (400, 2)
 
 
     return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
 def label_append(category, subject):
-    labels = []
     # Labels one-hot encoding
     if category == 0:       # 0: baseline
-        labels.append([1, 0])
+        return [1, 0]
     elif category == 1:     # 1: stimuli
-        labels.append([0, 1])
-    return labels
+        return [0, 1]
+
+    
 
 def data_shuffle(x, y):
+    x = np.array(x)
+    y = np.array(y)
     s = np.arange(x.shape[0])
     np.random.shuffle(s)
 
@@ -134,4 +142,5 @@ def data_shuffle(x, y):
     return x, y
 
 #[EEG, Labels, numOfBaseline, numOfStimuli, samples] = load_eeg_data()
+#[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = load_eeg_data_2()
 
