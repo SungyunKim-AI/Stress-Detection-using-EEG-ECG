@@ -17,3 +17,6 @@ ECG_512/
 __pycache__
 .vscode/settings.json
 *.asv
+
+#Checkpoint
+training_1/
