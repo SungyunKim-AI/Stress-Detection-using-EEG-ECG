@@ -104,12 +104,12 @@ class Load_Data:
         [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test))
         [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate))
 
-        print("Train Data Shape : ", x_Train.shape)         # (2868, 13, 5120)
-        print("Test Data Shape : ", x_Test.shape)           # (394, 13, 5120)
-        print("Validate Data Shape : ", x_Validate.shape)   # (400, 13, 5120)
-        print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
-        print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
-        print("Validate Labels Shape : ", y_Validate.shape) # (400, 2)
+        print("Train Data Shape : ", x_Train.shape)         # (2384, 13, 5120)
+        print("Test Data Shape : ", x_Test.shape)           # (318, 13, 5120)
+        print("Validate Data Shape : ", x_Validate.shape)   # (330, 13, 5120)
+        print("Train Labels Shape : ", y_Train.shape)       # (2384, 2)
+        print("Test Labels Shape : ", y_Test.shape)         # (318, 2)
+        print("Validate Labels Shape : ", y_Validate.shape) # (330, 2)
 
         return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
@@ -135,29 +135,11 @@ class Load_Data:
         elif category == 1:     # 1: stimuli
             return [0, 1]
 
+# Save Dataset Numpy format
 # [EEG, Labels, numOfBaseline, numOfStimuli, samples] = load_eeg_data()
-# [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
+[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
 
-"""
-Train Data Shape :  (335, 13, 5120)
-Test Data Shape :  (318, 13, 5120)
-Validate Data Shape :  (330, 13, 5120)
-Train Labels Shape :  (335, 2)
-Test Labels Shape :  (318, 2)
-Validate Labels Shape :  (330, 2)
-"""
-# import matplotlib.pyplot as plt
-# fig = plt.figure()
-# train = fig.add_subplot(3, 1, 1)
-# test = fig.add_subplot(3, 1, 2)
-# validate = fig.add_subplot(3, 1, 3)
-
-# train.plot(np.transpose(x_Train[0]))
-# test.plot(np.transpose(x_Test[0]))
-# validate.plot(np.transpose(x_Validate[0]))
-# print(y_Train)
-# print(y_Test)
-# print(y_Validate)
-
-# plt.show()
-
+savePath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset.npz"
+np.savez_compressed(savePath, 
+    x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
+    y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
