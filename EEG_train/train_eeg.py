@@ -1,23 +1,18 @@
+import os
 import numpy as np
 import tensorflow as tf
-
-# mne imports
-import mne
-from mne import io
-
-# tools for plotting confusion matrices
-from matplotlib import pyplot as plt
+from tensorflow import keras
 from sklearn.model_selection import train_test_split
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
-from load_eeg_data import load_eeg_data, load_eeg_data_2
+from Load_Data import Load_Data
 
 # Import Models
 from model_EEGNet import EEGNet
 from model_DeepConvNet import DeepConvNet
 
 
-# # Load ECG Data
+# # Load EEG Data
 # EEG, Labels, numOfBaseline, numOfStimuli, samples = load_eeg_data()
 
 # kernels, chans = 1, 13
@@ -29,7 +24,7 @@ from model_DeepConvNet import DeepConvNet
 #     X_validate, Y_validate, test_size=0.5, random_state=42)
 
 # # Load ECG Data_2
-[X_train, X_test, X_validate, Y_train, Y_test, Y_validate] = load_eeg_data_2()
+[X_train, X_test, X_validate, Y_train, Y_test, Y_validate] = Load_Data().load_eeg_data_2()
 kernels, chans, samples = 1, 13, X_train.shape[2]
 
 X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
@@ -47,7 +42,7 @@ print("Validate Labels Shape : ", Y_validate.shape) # (400, 2)
 ###################### model ######################
 
 model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
-               dropoutRate = 0.5, kernLength = 32, F1 = 8, D = 2, F2 = 16, 
+               dropoutRate = 0.5, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
                dropoutType = 'Dropout')
 
 # model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
@@ -58,20 +53,26 @@ model.compile(
     metrics=['accuracy']
 )
 
+model.summary()
+
+
+checkpoint_path = "training_1/cp-{epoch:04d}.ckpt"
+
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path,
+    save_weights_only=True,
+    verbose=1)
+
+# `checkpoint_path` 포맷을 사용하는 가중치를 저장합니다
+model.save_weights(checkpoint_path.format(epoch=0))
+
 fit_model = model.fit(
     X_train,
     Y_train,
-    epochs=300,
+    epochs=200,
     batch_size=16,
-    validation_data=(X_validate, Y_validate)    # (400, 13, 5120, 1) / ()
-)
-
-# make prediction on test set.
-probs = model.predict(X_test)
-preds = probs.argmax(axis = -1)  
-acc   = np.mean(preds == Y_test.argmax(axis=-1))
-print("Classification accuracy: %f " % (acc))
-
+    validation_data=(X_validate, Y_validate),
+    callbacks=[cp_callback])
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)
