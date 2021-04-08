@@ -13,7 +13,7 @@ class Load_Data:
         self.Ss = 40     # Sample second (sec)
         self.step = 2    # Overlapping Step (sec)
         self.channels = list(range(13))
-        self.Subjects = 10
+        self.Subjects = 9
 
         # Dataset Path _ ASR + CAR
         self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/"
@@ -101,9 +101,9 @@ class Load_Data:
                         y_Train.extend(overlappedLabel)
 
         # Data Shuffle
-        [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train))
-        [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test))
-        [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate))
+        [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train), random_state=42)
+        [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
+        [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate), random_state=42)
 
         print("Train Data Shape : ", x_Train.shape)         # (2384, 13, 5120)
         print("Test Data Shape : ", x_Test.shape)           # (318, 13, 5120)
@@ -125,23 +125,21 @@ class Load_Data:
         y_Test = []
         y_Validate = []
 
+        samples = shuffle(np.array(list(range(1,11))), random_state=42)
+
         for category, dir_path in enumerate([self.baseline_paths, self.stimuli_paths]):
-            for subject in tqdm(range(1, self.Subjects+1)):
-                if subject == 2:
-                    continue
-
-                for sample in range(1, 11):
+            for subject in range(1, self.Subjects+1):
+                for i, sample in enumerate(samples):
                     path = dir_path + "s" + str(subject) + "_" + str(sample) + ".csv"
-
                     dataset = pd.read_csv(path, header=None)
                     data_frames = pd.DataFrame(dataset)
                     data = np.array(data_frames.values)
 
-                    if subject == 10:
+                    if i == 8:
                         [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
                         x_Validate.extend(overlappedData)
                         y_Validate.extend(overlappedLabel)
-                    elif subject == 9:
+                    elif i == 9:
                         [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
                         x_Test.extend(overlappedData)
                         y_Test.extend(overlappedLabel)
@@ -151,9 +149,9 @@ class Load_Data:
                         y_Train.extend(overlappedLabel)
 
         # Data Shuffle
-        [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train))
-        [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test))
-        [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate))
+        [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train), random_state=42)
+        [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
+        [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate), random_state=42)
 
         print("Train Data Shape : ", x_Train.shape)         # (2384, 13, 5120)
         print("Test Data Shape : ", x_Test.shape)           # (318, 13, 5120)
@@ -167,6 +165,7 @@ class Load_Data:
     def data_overlapping(self, data, chans, category, subject):
         overlappedData = []
         overlappedLabel = []
+        print(data.shape)
         endPoint = int(data.shape[1]/self.Fs) - self.Ss + 1
         for i in range(0, endPoint, self.step):
             start = i * self.Fs
@@ -189,9 +188,10 @@ class Load_Data:
 
 # ================= Save Dataset Numpy format =====================
 # [EEG, Labels, numOfBaseline, numOfStimuli, samples] = load_eeg_data()
-[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
+# [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
+[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_3()
 
-savePath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset.npz"
+savePath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset2.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
