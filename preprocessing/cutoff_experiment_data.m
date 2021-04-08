@@ -14,50 +14,50 @@ clc;
 % restEnd =        [123, 121, 121, 120, 134, 120, 125, 120, 120, 130];
 % cptStart =       [133, 128, 123, 120, 135, 123, 125, 130, 120, 137];
 
-% => subject3 : 조윤혁
-% subject = 3;
+% => subject2 : 조윤혁
+% subject = 2;
 % experimentTime = [195, 195, 195, 195, 195, 195, 195, 195, 195, 195];
 % restEnd =        [120, 120, 120, 120, 120, 117, 120, 120, 120, 120];
 % cptStart =       [120, 125, 126, 120, 120, 126, 125, 126, 122, 120];
 
-% => subject4 : 김인애
-% subject = 4;
+% => subject3 : 김인애
+% subject = 3;
 % experimentTime = [195, 195, 195, 195, 195, 195, 195, 195, 195, 195];
 % restEnd =        [120, 120, 120, 120, 120, 120, 120, 120, 120, 120];
 % cptStart =       [125, 124, 126, 124, 125, 125, 126, 125, 124, 124];
 
-% => subject5 : 안이솔
-% subject = 5;
+% => subject4 : 안이솔
+% subject = 4;
 % experimentTime = [195, 195, 195, 195, 193, 210, 195, 195, 196, 196];
 % restEnd =        [120, 120, 120, 120, 120, 135, 120, 120, 121, 121];
 % cptStart =       [122, 123, 122, 120, 120, 137, 122, 122, 121, 124];
 
-% => subject6 : 김성윤
-% subject = 6;
+% => subject5 : 김성윤
+% subject = 5;
 % experimentTime = [195, 195, 195, 195, 193, 195, 195, 195, 195, 195];
 % restEnd =        [120, 120, 120, 120, 120, 122, 121, 122, 120, 120];
 % cptStart =       [123, 123, 123, 123, 123, 128, 122, 124, 123, 122];
 
-% => subject7 : 왕윤성
-% subject = 7;
+% => subject6 : 왕윤성
+% subject = 6;
 % experimentTime = [195, 195, 195, 195, 195, 195, 195, 195, 195, 195];
 % restEnd =        [120, 120, 120, 122, 120, 120, 120, 121, 120, 120];
 % cptStart =       [127, 124, 123, 125, 123, 123, 125, 124, 123, 124];
 
-% => subject8 : 유종우
-% subject = 8;
+% => subject7 : 유종우
+% subject = 7;
 % experimentTime = [195, 195, 195, 195, 199, 195, 195, 195, 196, 197];
 % restEnd =        [120, 120, 121, 121, 125, 121, 123, 120, 120, 122];
 % cptStart =       [126, 125, 127, 128, 132, 127, 125, 126, 125, 127];
 
-% => subject9 : 강범석
-subject = 9;
-experimentTime = [195, 195, 195, 195, 195, 195, 195, 195, 195, 195];
-restEnd =        [121, 121, 121, 120, 121, 121, 119, 114, 122, 120];
-cptStart =       [125, 124, 125, 125, 127, 125, 126, 125, 129, 126];
+% => subject8 : 강범석
+% subject = 8;
+% experimentTime = [195, 195, 195, 195, 195, 195, 195, 195, 195, 195];
+% restEnd =        [121, 121, 121, 120, 121, 121, 119, 114, 122, 120];
+% cptStart =       [125, 124, 125, 125, 127, 125, 126, 125, 129, 126];
 
-% => subject10 : 김찬우
-% subject = 10;
+% => subject9 : 김찬우
+% subject = 9;
 % experimentTime = [190, 195, 195, 195, 195, 195, 195, 195, 200, 195];
 % restEnd =        [120, 120, 120, 120, 120, 120, 120, 120, 125, 120];
 % cptStart =       [124, 125, 126, 125, 123, 125, 125, 123, 132, 125];
@@ -70,7 +70,6 @@ load_path_ECG = "C:\\Users\\user\\Desktop\\Experiment Data\\ECG\\";
 save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\EEG\\";
 save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
 % =========================================================================
-
 
 
 for sample = 1:noOfSamples
@@ -114,6 +113,10 @@ for sample = 1:noOfSamples
     
     
     % ========================= ECG ==================================
+    if subject < 5
+        continue;
+    end
+    
     fprintf('=> ECG\n');
     % Data load
     file_path = char(load_path_ECG + "s" + subject + "_" + sample + ".csv");

@@ -23,6 +23,7 @@ class Load_Data:
         # self.baseline_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/baseline/alpha/*")
         # self.stimuli_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/stimuli/alpha/*")
 
+
     # ======================= 전체 데이터 셋을 오버래핑 ========================
     def load_eeg_data(self):
         print("EEG Data Loading...")
@@ -113,6 +114,55 @@ class Load_Data:
 
         return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
+    # ============ 각 피실험자당 1개 Test, 1개 Validate 선정해서 오버래핑하고 셔플 ============
+    def load_eeg_data_3(self):
+        print("EEG Data Loading...")
+
+        x_Train = []
+        x_Test = []
+        x_Validate = []
+        y_Train = []
+        y_Test = []
+        y_Validate = []
+
+        for category, dir_path in enumerate([self.baseline_paths, self.stimuli_paths]):
+            for subject in tqdm(range(1, self.Subjects+1)):
+                if subject == 2:
+                    continue
+
+                for sample in range(1, 11):
+                    path = dir_path + "s" + str(subject) + "_" + str(sample) + ".csv"
+
+                    dataset = pd.read_csv(path, header=None)
+                    data_frames = pd.DataFrame(dataset)
+                    data = np.array(data_frames.values)
+
+                    if subject == 10:
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        x_Validate.extend(overlappedData)
+                        y_Validate.extend(overlappedLabel)
+                    elif subject == 9:
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        x_Test.extend(overlappedData)
+                        y_Test.extend(overlappedLabel)
+                    else:
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        x_Train.extend(overlappedData)
+                        y_Train.extend(overlappedLabel)
+
+        # Data Shuffle
+        [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train))
+        [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test))
+        [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate))
+
+        print("Train Data Shape : ", x_Train.shape)         # (2384, 13, 5120)
+        print("Test Data Shape : ", x_Test.shape)           # (318, 13, 5120)
+        print("Validate Data Shape : ", x_Validate.shape)   # (330, 13, 5120)
+        print("Train Labels Shape : ", y_Train.shape)       # (2384, 2)
+        print("Test Labels Shape : ", y_Test.shape)         # (318, 2)
+        print("Validate Labels Shape : ", y_Validate.shape) # (330, 2)
+
+        return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
     def data_overlapping(self, data, chans, category, subject):
         overlappedData = []
@@ -135,7 +185,9 @@ class Load_Data:
         elif category == 1:     # 1: stimuli
             return [0, 1]
 
-# Save Dataset Numpy format
+
+
+# ================= Save Dataset Numpy format =====================
 # [EEG, Labels, numOfBaseline, numOfStimuli, samples] = load_eeg_data()
 [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
 

@@ -10,7 +10,7 @@
 load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
 save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\normalized_data\\";
 
- for subject = 6:10
+ for subject = 5:9
     for sample = 1:10
         for category = ["baseline", "stimuli"]
             file_path = char(load_path_ECG + category + "\s" + subject + "_" + sample + ".csv");
