@@ -12,7 +12,7 @@ from model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset2.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -53,7 +53,7 @@ model.compile(
 model.summary()
 
 
-checkpoint_path = "training_1/cp-{epoch:04d}.ckpt"
+checkpoint_path = "training_2/cp-{epoch:04d}.ckpt"
 
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path,
@@ -66,7 +66,7 @@ model.save_weights(checkpoint_path.format(epoch=0))
 fit_model = model.fit(
     x_Train,
     y_Train,
-    epochs=200,
+    epochs=300,
     batch_size=16,
     validation_data=(x_Validate, y_Validate),
     callbacks=[cp_callback])

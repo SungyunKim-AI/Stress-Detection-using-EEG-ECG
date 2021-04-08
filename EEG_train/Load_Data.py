@@ -128,7 +128,7 @@ class Load_Data:
         samples = shuffle(np.array(list(range(1,11))), random_state=42)
 
         for category, dir_path in enumerate([self.baseline_paths, self.stimuli_paths]):
-            for subject in range(1, self.Subjects+1):
+            for subject in tqdm(range(1, self.Subjects+1)):
                 for i, sample in enumerate(samples):
                     path = dir_path + "s" + str(subject) + "_" + str(sample) + ".csv"
                     dataset = pd.read_csv(path, header=None)
@@ -153,19 +153,18 @@ class Load_Data:
         [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
         [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate), random_state=42)
 
-        print("Train Data Shape : ", x_Train.shape)         # (2384, 13, 5120)
-        print("Test Data Shape : ", x_Test.shape)           # (318, 13, 5120)
-        print("Validate Data Shape : ", x_Validate.shape)   # (330, 13, 5120)
-        print("Train Labels Shape : ", y_Train.shape)       # (2384, 2)
-        print("Test Labels Shape : ", y_Test.shape)         # (318, 2)
-        print("Validate Labels Shape : ", y_Validate.shape) # (330, 2)
+        print("Train Data Shape : ", x_Train.shape)         # (2409, 13, 5120)
+        print("Test Data Shape : ", x_Test.shape)           # (292, 13, 5120)
+        print("Validate Data Shape : ", x_Validate.shape)   # (298, 13, 5120)
+        print("Train Labels Shape : ", y_Train.shape)       # (2409, 2)
+        print("Test Labels Shape : ", y_Test.shape)         # (292, 2)
+        print("Validate Labels Shape : ", y_Validate.shape) # (298, 2)
 
         return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
     def data_overlapping(self, data, chans, category, subject):
         overlappedData = []
         overlappedLabel = []
-        print(data.shape)
         endPoint = int(data.shape[1]/self.Fs) - self.Ss + 1
         for i in range(0, endPoint, self.step):
             start = i * self.Fs
