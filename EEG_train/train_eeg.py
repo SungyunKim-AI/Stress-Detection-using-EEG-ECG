@@ -53,7 +53,7 @@ model.compile(
 model.summary()
 
 
-checkpoint_path = "training_2/cp-{epoch:04d}.ckpt"
+checkpoint_path = "training_3/cp-{epoch:04d}.ckpt"
 
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path,
