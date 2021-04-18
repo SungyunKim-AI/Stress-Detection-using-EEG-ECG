@@ -12,16 +12,18 @@ class Load_Data:
         self.Fs = 128    # Sample Frequency (Hz)
         self.Ss = 40     # Sample second (sec)
         self.step = 2    # Overlapping Step (sec)
-        self.channels = list(range(13))
+        self.channels = list(range(14))
         self.Subjects = 9
 
         # Dataset Path _ ASR + CAR
-        self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/"
-        self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/alpha/"
+        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/overall/"
+        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/overall/"
+        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/"
+        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/alpha/"
 
         # Dataset Path _ CAR
-        # self.baseline_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/baseline/alpha/*")
-        # self.stimuli_paths = glob.glob("C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/stimuli/alpha/*")
+        self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/baseline/overall/"
+        self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/stimuli/overall/"
 
 
     # ======================= 전체 데이터 셋을 오버래핑 ========================
@@ -190,7 +192,7 @@ class Load_Data:
 # [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_2()
 [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data_3()
 
-savePath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset2.npz"
+savePath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset4.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)

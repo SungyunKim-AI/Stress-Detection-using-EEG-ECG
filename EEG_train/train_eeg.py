@@ -12,7 +12,7 @@ from model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset2.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset4.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -22,7 +22,7 @@ y_Train = data['y_Train']
 y_Test = data['y_Test']
 y_Validate = data['y_Validate']
 
-kernels, chans, samples = 1, 13, x_Train.shape[2]
+kernels, chans, samples = 1, 14, x_Train.shape[2]
 
 x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
 x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
@@ -35,6 +35,7 @@ print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
 print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
 print("Validate Labels Shape : ", y_Validate.shape) # (400, 2)
 
+data.close()
 
 ###################### model ######################
 
