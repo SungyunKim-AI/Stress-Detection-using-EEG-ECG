@@ -1,50 +1,59 @@
+import os
 import numpy as np
 import tensorflow as tf
-
-# mne imports
-import mne
-from mne import io
-
-# tools for plotting confusion matrices
-from matplotlib import pyplot as plt
+from tensorflow import keras
 from sklearn.model_selection import train_test_split
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
-from load_ecg_data import load_ecg_data
-from model_ECGModel_v1 import ECGModel_v1
-from model_DeepConvNet import DeepConvNet     # DeepConvNet
 
-# Load ECG Data
-channels = [0,1,2]
-#channels = 2
-ECG, Labels, numOfBaseline, numOfStimuli, samples = load_ecg_data()
+# Import Models
+from model_ECGModel_v1 import ECGModel_v1, DeepECGModel
+from model_DeepConvNet import DeepConvNet
 
-kernels, chans = 1, 3
+# Load ECG Data numpy format
+#loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset4.npz"
+loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset.npz"
+data = np.load(loadPath)
 
-# Train : Validate : Test = 7 : 1.5 : 1.5
-X_train, X_validate, Y_train, Y_validate = train_test_split(
-    ECG, Labels, test_size=0.3, random_state=42)
-X_validate, X_test, Y_validate, Y_test = train_test_split(
-    X_validate, Y_validate, test_size=0.5, random_state=42)
+x_Train = data['x_Train']
+x_Test = data['x_Test']
+x_Validate = data['x_Validate']
+y_Train = data['y_Train']
+y_Test = data['y_Test']
+y_Validate = data['y_Validate']
+
+kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
+
 
 # 1D
-# X_train = X_train.reshape(X_train.shape[0], samples, chans)
-# X_validate = X_validate.reshape(X_validate.shape[0], samples, chans)
-# X_test = X_test.reshape(X_test.shape[0], samples, chans)
+x_Train = x_Train[:, 1, :]
+x_Validate = x_Validate[:, 1, :]
+x_Test = x_Test[:, 1, :]
+x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
 
 # 2D
-X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
-X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
-X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
+# X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
+# X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
+# X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
 
-print("Train Set Shape : ", X_train.shape)
-print("Validate Set Shape : ", X_validate.shape)
-print("Test Set Shape : ", X_test.shape)
+print("Train Set Shape : ", x_Train.shape)          # (2384, 13, 5120, 1)
+print("Test Set Shape : ", x_Test.shape)            # (318, 13, 5120, 1)
+print("Validate Set Shape : ", x_Validate.shape)    # (330, 13, 5120, 1)
+print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
+print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
+print("Validate Labels Shape : ", y_Validate.shape) 
+
+data.close()
+
+
 
 ###################### model ######################
 
 # model = ECGModel_v1(samples)
-model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
+# model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
+model = DeepECGModel(samples)
 
 
 model.compile(
@@ -53,19 +62,26 @@ model.compile(
     metrics=['accuracy']
 )
 
+model.summary()
+
+checkpoint_path = "ecg_training_1/cp-{epoch:04d}.ckpt"
+
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path,
+    save_weights_only=True,
+    verbose=1)
+
+# `checkpoint_path` 포맷을 사용하는 가중치를 저장합니다
+model.save_weights(checkpoint_path.format(epoch=0))
+
 fit_model = model.fit(
-    X_train,
-    Y_train,
+    x_Train,
+    y_Train,
     epochs=300,
     batch_size=16,
-    validation_data=(X_validate, Y_validate)
+    validation_data=(x_Validate, y_Validate),
+    callbacks=[cp_callback]
 )
-
-# make prediction on test set.
-probs = model.predict(X_test)
-preds = probs.argmax(axis = -1)  
-acc   = np.mean(preds == Y_test.argmax(axis=-1))
-print("Classification accuracy: %f " % (acc))
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)

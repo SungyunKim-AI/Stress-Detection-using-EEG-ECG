@@ -37,6 +37,8 @@ print("Validate Labels Shape : ", y_Validate.shape) # (400, 2)
 
 data.close()
 
+
+
 ###################### model ######################
 
 model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
@@ -54,7 +56,7 @@ model.compile(
 model.summary()
 
 
-checkpoint_path = "training_3/cp-{epoch:04d}.ckpt"
+checkpoint_path = "eeg_training_3/cp-{epoch:04d}.ckpt"
 
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path,
@@ -70,7 +72,8 @@ fit_model = model.fit(
     epochs=300,
     batch_size=16,
     validation_data=(x_Validate, y_Validate),
-    callbacks=[cp_callback])
+    callbacks=[cp_callback]
+)
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)
