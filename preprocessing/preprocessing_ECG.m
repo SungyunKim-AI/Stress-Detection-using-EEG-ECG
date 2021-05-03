@@ -10,55 +10,60 @@
 load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
 save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\normalized_data\\";
 
- for subject = 5:9
+for subject = 5:9
     for sample = 1:10
         for category = ["baseline", "stimuli"]
             file_path = char(load_path_ECG + category + "\s" + subject + "_" + sample + ".csv");
-            dataTable = readtable(file_path,"VariableNamingRule","preserve");
-            data = dataTable{:,:};
-            
-            for i = 1:3
-                % Data Normalize
-                data(:,i) = normalize(data(:,i),'range');
+            try
+                dataTable = readtable(file_path,"VariableNamingRule","preserve");
+                data = dataTable{:,:};
                 
-%                 % 2. Detect the R peaks of the QRS complex
-%                 % 함수 출처 : https://github.com/danielwedekind/qrsdetector/tree/d0efea0d883ea329b1110d3fa51802458d71f3b1
-%                 [qrs_pos,filt_data,int_data,thF1,thI1] = pantompkins_qrs(data(:,i), Fs);
-%                 
-%                 subplot(4,1,2);
-%                 plot(filt_data);
-% 
-%                 % 3. Remove the abnormal RRI
-% 
-%                 % 4. Zero-one tranformation
-%                 [row, col] = size(qrs_pos);
-%                 qrspeaks = zeros(row, col);
-%                 previousIndex = 1;
-%                 for index = 1:col
-%                     filt_data(previousIndex:qrs_pos(index)-1) = 0;
-%                     qrspeaks(index) = filt_data(qrs_pos(index));
-%                     filt_data(qrs_pos(index)) = 1;
-%                     previousIndex = qrs_pos(index) + 1;
-%                 end
-%                 filt_data(previousIndex:end) = 0;
-%                
-%                 subplot(4,1,3);
-%                 plot(filt_data);
-% 
-%                 % 5. Lomb Periodogram (0.04 to 20 Hz was adopted)
-%                 [pxx,f] = plomb(qrspeaks,qrs_pos);
-%                 plot(f,pxx);
-%                 xlabel("Frequency");
-%                 ylabel("Power");
-%                 title("Lomb Periodogram");
-
+                for i = 1:3
+                    % Data Normalize
+                    data(:,i) = normalize(data(:,i),'range');
+                    
+%                     % 2. Detect the R peaks of the QRS complex
+%                     % 함수 출처 : https://github.com/danielwedekind/qrsdetector/tree/d0efea0d883ea329b1110d3fa51802458d71f3b1
+%                     [qrs_pos,filt_data,int_data,thF1,thI1] = pantompkins_qrs(data(:,i), Fs);
+%                     
+%                     subplot(4,1,2);
+%                     plot(filt_data);
+%                     
+%                     % 3. Remove the abnormal RRI
+%                     
+%                     % 4. Zero-one tranformation
+%                     [row, col] = size(qrs_pos);
+%                     qrspeaks = zeros(row, col);
+%                     previousIndex = 1;
+%                     for index = 1:col
+%                         filt_data(previousIndex:qrs_pos(index)-1) = 0;
+%                         qrspeaks(index) = filt_data(qrs_pos(index));
+%                         filt_data(qrs_pos(index)) = 1;
+%                         previousIndex = qrs_pos(index) + 1;
+%                     end
+%                     filt_data(previousIndex:end) = 0;
+%                     
+%                     subplot(4,1,3);
+%                     plot(filt_data);
+%                     
+%                     % 5. Lomb Periodogram (0.04 to 20 Hz was adopted)
+%                     [pxx,f] = plomb(qrspeaks,qrs_pos);
+%                     plot(f,pxx);
+%                     xlabel("Frequency");
+%                     ylabel("Power");
+%                     title("Lomb Periodogram");
+                    
+                end
+                downData = downsample(data, 4);
+                
+                fileName = char(save_path_ECG + category + "\\s" + subject + "_" + sample + ".csv");
+                writematrix(downData, fileName);
+            catch
+                continue
             end
-            
-            fileName = char(save_path_ECG + category + "\\s" + subject + "_" + sample + ".csv");
-            writematrix(data, fileName);
         end
     end
- end
+end
  
 
 % wt = modwt(filtedData,5);

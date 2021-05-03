@@ -63,12 +63,12 @@ class Load_Data:
         [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
         [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate), random_state=42)
 
-        print("Train Data Shape : ", x_Train.shape)         # (2409, 13, 5120)
-        print("Test Data Shape : ", x_Test.shape)           # (292, 13, 5120)
-        print("Validate Data Shape : ", x_Validate.shape)   # (298, 13, 5120)
-        print("Train Labels Shape : ", y_Train.shape)       # (2409, 2)
-        print("Test Labels Shape : ", y_Test.shape)         # (292, 2)
-        print("Validate Labels Shape : ", y_Validate.shape) # (298, 2)
+        print("Train Data Shape : ", x_Train.shape)         # (2543, 14, 5120)
+        print("Test Data Shape : ", x_Test.shape)           # (319, 14, 5120)
+        print("Validate Data Shape : ", x_Validate.shape)   # (321, 14, 5120)
+        print("Train Labels Shape : ", y_Train.shape)       # (2543, 2)
+        print("Test Labels Shape : ", y_Test.shape)         # (319, 2)
+        print("Validate Labels Shape : ", y_Validate.shape) # (321, 2)
 
         return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 

@@ -9,12 +9,14 @@ class Load_Data:
         self.Fs = 128    # Sample Frequency (Hz)
         self.Ss = 40     # Sample second (sec)
         self.step = 2    # Overlapping Step (sec)
-        self.channels = list(range(14))
-        self.Subjects = 4
+        self.channels = list(range(3))
+        self.Subjects = 9
 
         # Dataset Path
         self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/"
         self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/"
+
+        self.deleteData = [1,2,3,8,9]
 
     # ============ 각 피실험자당 1개 Test, 1개 Validate 선정해서 오버래핑하고 셔플 ============
     def load_ecg_data(self):
@@ -26,12 +28,17 @@ class Load_Data:
         samples = shuffle(np.array(list(range(1,11))), random_state=42)
 
         for category, dir_path in enumerate([self.baseline_paths, self.stimuli_paths]):
-            for subject in tqdm(range(1, self.Subjects+1)):
+            for subject in tqdm(range(5, self.Subjects+1)):
                 for i, sample in enumerate(samples):
+
+                    if subject == 8 and (sample == 1 or sample == 2 or sample == 3 or sample == 8 or sample == 9):
+                        continue
+
                     path = dir_path + "s" + str(subject) + "_" + str(sample) + ".csv"
                     dataset = pd.read_csv(path, header=None)
                     data_frames = pd.DataFrame(dataset)
                     data = np.array(data_frames.values)
+                    data = np.transpose(data)
 
                     if i == 8:
                         [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
@@ -45,18 +52,19 @@ class Load_Data:
                         [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
                         x_Train.extend(overlappedData)
                         y_Train.extend(overlappedLabel)
+                        
 
         # Data Shuffle
         [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train), random_state=42)
         [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
         [x_Validate, y_Validate] = shuffle(np.array(x_Validate), np.array(y_Validate), random_state=42)
 
-        print("Train Data Shape : ", x_Train.shape)         # (2409, 13, 5120)
-        print("Test Data Shape : ", x_Test.shape)           # (292, 13, 5120)
-        print("Validate Data Shape : ", x_Validate.shape)   # (298, 13, 5120)
-        print("Train Labels Shape : ", y_Train.shape)       # (2409, 2)
-        print("Test Labels Shape : ", y_Test.shape)         # (292, 2)
-        print("Validate Labels Shape : ", y_Validate.shape) # (298, 2)
+        print("Train Data Shape : ", x_Train.shape)         # (1175, 3, 5120)
+        print("Test Data Shape : ", x_Test.shape)           # (170, 3, 5120)
+        print("Validate Data Shape : ", x_Validate.shape)   # (167, 3, 5120)
+        print("Train Labels Shape : ", y_Train.shape)       # (1175, 2)
+        print("Test Labels Shape : ", y_Test.shape)         # (170, 2)
+        print("Validate Labels Shape : ", y_Validate.shape) # (167, 2)
 
         return x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate
 
@@ -71,7 +79,7 @@ class Load_Data:
 
             overlappedData.append(part_data)
             overlappedLabel.append(self.label_append(category, subject))
-
+        
         return overlappedData, overlappedLabel
 
     def label_append(self, category, subject):
@@ -84,7 +92,7 @@ class Load_Data:
 
 
 # ================= Save Dataset Numpy format =====================
-[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_eeg_data()
+[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_ecg_data()
 
 savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset.npz"
 np.savez_compressed(savePath, 
