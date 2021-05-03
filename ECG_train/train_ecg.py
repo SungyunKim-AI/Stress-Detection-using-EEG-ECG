@@ -11,8 +11,8 @@ from model_ECGModel_v1 import ECGModel_v1, DeepECGModel
 from model_DeepConvNet import DeepConvNet
 
 # Load ECG Data numpy format
-#loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset4.npz"
-loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset.npz"
+#loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -26,17 +26,29 @@ kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
 
 
 # 1D
-x_Train = x_Train[:, 1, :]
-x_Validate = x_Validate[:, 1, :]
-x_Test = x_Test[:, 1, :]
-x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
-x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
-x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+# x_Train = x_Train[:, 1, :]
+# x_Validate = x_Validate[:, 1, :]
+# x_Test = x_Test[:, 1, :]
+# x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+# x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+# x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+# Train Set Shape :  (1175, 5120, 1)
+# Test Set Shape :  (170, 5120, 1)    
+# Validate Set Shape :  (167, 5120, 1)
+# Train Labels Shape :  (1175, 2)     
+# Test Labels Shape :  (170, 2)       
+# Validate Labels Shape :  (167, 2) 
 
 # 2D
-# X_train = X_train.reshape(X_train.shape[0], chans, samples, kernels)
-# X_validate = X_validate.reshape(X_validate.shape[0], chans, samples, kernels)
-# X_test = X_test.reshape(X_test.shape[0], chans, samples, kernels)
+x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
+x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, kernels)
+# Train Set Shape :  (1175, 3, 5120, 1)
+# Test Set Shape :  (170, 3, 5120, 1)
+# Validate Set Shape :  (167, 3, 5120, 1)
+# Train Labels Shape :  (1175, 2)
+# Test Labels Shape :  (170, 2)
+# Validate Labels Shape :  (167, 2)
 
 print("Train Set Shape : ", x_Train.shape)          # (2384, 13, 5120, 1)
 print("Test Set Shape : ", x_Test.shape)            # (318, 13, 5120, 1)
@@ -52,8 +64,8 @@ data.close()
 ###################### model ######################
 
 # model = ECGModel_v1(samples)
-# model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
-model = DeepECGModel(samples)
+model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
+# model = DeepECGModel(samples)
 
 
 model.compile(
