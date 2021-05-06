@@ -7,12 +7,12 @@ from sklearn.model_selection import train_test_split
 from utils import plot_loss_curve, plot_acc_curve, normalization
 
 # Import Models
-from model_ECGModel_v1 import ECGModel_v1, DeepECGModel, HealthMonitoring_Model, CustomModel
+from model_ECGModel_v1 import *
 from model_DeepConvNet import DeepConvNet
 
 # Load ECG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset.npz"
-#loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset.npz"
+# loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_128.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_256.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -22,35 +22,19 @@ y_Train = data['y_Train']
 y_Test = data['y_Test']
 y_Validate = data['y_Validate']
 
-kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
-
+data.close()
 
 # 1D
-x_Train = x_Train[:, 2]
-x_Validate = x_Validate[:, 2]
-x_Test = x_Test[:, 2]
-x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
-x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
-x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
-
-# Train Set Shape :  (1175, 5120, 1)
-# Test Set Shape :  (170, 5120, 1)    
-# Validate Set Shape :  (167, 5120, 1)
-# Train Labels Shape :  (1175, 2)     
-# Test Labels Shape :  (170, 2)       
-# Validate Labels Shape :  (167, 2) 
+# samples = x_Train.shape[1]*x_Train.shape[2]
+# x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+# x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+# x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
 
 # 2D
-# x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
-# x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
-# x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, kernels)
-
-# Train Set Shape :  (1175, 3, 5120, 1)
-# Test Set Shape :  (170, 3, 5120, 1)
-# Validate Set Shape :  (167, 3, 5120, 1)
-# Train Labels Shape :  (1175, 2)
-# Test Labels Shape :  (170, 2)
-# Validate Labels Shape :  (167, 2)
+x, y = x_Train.shape[1], x_Train.shape[2]
+x_Train = x_Train.reshape(x_Train.shape[0], x, y, 1)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], x, y, 1)
+x_Test = x_Test.reshape(x_Test.shape[0], x, y, 1)
 
 print("Train Set Shape : ", x_Train.shape)          # (2384, 13, 5120, 1)
 print("Test Set Shape : ", x_Test.shape)            # (318, 13, 5120, 1)
@@ -59,25 +43,25 @@ print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
 print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
 print("Validate Labels Shape : ", y_Validate.shape) 
 
-data.close()
-
-
 
 ###################### model ######################
 
+# 1D
 # model = DeepECGModel(samples)
 # model = ECGModel_v1(samples)
-# model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.25)
+# model = CustomModel(samples)
 
-# model = DeepECGModel(samples)
-model = CustomModel(samples)
+# 2D
+model = DeepConvNet(nb_classes=2, input_size=(129,45,1), dropoutRate=0.25)
 
-# optimizer : health monitor는 SGD, 다른건 adam!!
+
+
 model.compile(
     loss='categorical_crossentropy',
     optimizer='adam',
     metrics=['accuracy']
 )
+# optimizer : health monitor는 SGD, 다른건 adam!!
 # model.compile(
 #     loss='categorical_crossentropy',
 #     optimizer=tf.keras.optimizers.SGD(lr=0.01),

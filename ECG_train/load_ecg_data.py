@@ -6,20 +6,17 @@ from tqdm import tqdm
 
 class Load_Data:
     
-    def __init__(self, fs=512, ss=40, step=2, subejct=9):
+    def __init__(self, home_dir, fs=512, ss=40, step=2, subejct=9):
         self.Fs = fs    # Sample Frequency (Hz)
         self.Ss = ss     # Sample second (sec)
         self.step = step    # Overlapping Step (sec)
         self.channels = list(range(3))
         self.Subjects = subejct
+        self.home_dir = home_dir
 
         # Dataset Path
-        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/"
-        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/"
-        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_256/baseline/"
-        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_256/stimuli/"
-        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_128/baseline/"
-        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_128/stimuli/"
+        self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/" + home_dir + "/baseline/"
+        self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/" + home_dir + "/stimuli/"
 
         self.deleteData = [1,2,3,8,9]
 
@@ -82,7 +79,7 @@ class Load_Data:
 
         for i, dataset in enumerate([train, test, validate]):
             for sample in dataset[:, ch]:
-                f, t, Zxx = signal.stft(sample, fs=self.Fs, window='hamming')
+                f, t, Zxx = signal.spectrogram(sample, fs=self.Fs)
 
                 if i == 0:
                     x_Train.append(Zxx)
@@ -126,16 +123,33 @@ class Load_Data:
 
 
 # ================= Save Dataset Numpy format =====================
-ecg_dataset_256 = Load_Data()
-[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = ecg_dataset_256.load_ecg_data(fs=256)
+ecg_dataset_256 = Load_Data(home_dir="FS_256", fs=256)
+[train, test, validate, y_Train, y_Test, y_Validate] =ecg_dataset_256.load_ecg_data()
+[x_Train, x_Test, x_Validate] = ecg_dataset_256.STFT(train, test, validate)
 savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_256.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
-ecg_dataset_128 = Load_Data()
-[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = ecg_dataset_256.load_ecg_data(fs=128)
+# Train Data Shape :  (1175, 129, 45)
+# Test Data Shape :  (170, 129, 45)
+# Validate Data Shape :  (167, 129, 45)
+# Train Labels Shape :  (1175, 2)
+# Test Labels Shape :  (170, 2)
+# Validate Labels Shape :  (167, 2)
+
+
+ecg_dataset_128 = Load_Data(home_dir="FS_128", fs=128)
+[train, test, validate, y_Train, y_Test, y_Validate] =ecg_dataset_128.load_ecg_data()
+[x_Train, x_Test, x_Validate] = ecg_dataset_128.STFT(train, test, validate)
 savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_128.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
+
+# Train Data Shape :  (1175, 129, 22)
+# Test Data Shape :  (170, 129, 22)
+# Validate Data Shape :  (167, 129, 22)
+# Train Labels Shape :  (1175, 2)
+# Test Labels Shape :  (170, 2)
+# Validate Labels Shape :  (167, 2)

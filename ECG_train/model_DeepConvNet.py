@@ -12,7 +12,7 @@ from tensorflow.keras.layers import SpatialDropout2D
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 
-def DeepConvNet(nb_classes, Chans = 14, Samples = 256, dropoutRate = 0.5):
+def DeepConvNet(nb_classes, input_size, dropoutRate = 0.5):
     """ Keras implementation of the Deep Convolutional Network as described in
     Schirrmeister et. al. (2017), Human Brain Mapping.
     
@@ -37,7 +37,7 @@ def DeepConvNet(nb_classes, Chans = 14, Samples = 256, dropoutRate = 0.5):
     """
 
     # start the model
-    input_main   = Input((Chans, Samples, 1))
+    input_main   = Input(input_size)
     block1       = Conv2D(25, (1, 10), 
                                  input_shape=(Chans, Samples, 1),
                                  kernel_constraint = max_norm(2., axis=(0,1,2)))(input_main)
