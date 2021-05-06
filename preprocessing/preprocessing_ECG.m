@@ -8,7 +8,9 @@
 
 
 load_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\cutoff_preprocessed\\ECG\\";
-save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\normalized_data\\";
+% save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\normalized_data\\";
+% save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\FS_256\\";
+save_path_ECG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ECG_preprocessed\\FS_128\\";
 
 for subject = 5:9
     for sample = 1:10
@@ -17,11 +19,11 @@ for subject = 5:9
             try
                 dataTable = readtable(file_path,"VariableNamingRule","preserve");
                 data = dataTable{:,:};
-                
-                for i = 1:3
-                    % Data Normalize
-                    data(:,i) = normalize(data(:,i),'range');
-                    
+         
+%                 for i = 1:3         
+%                     % Data Normalize
+%                     data(:,i) = normalize(data(:,i),'range');
+%                 
 %                     % 2. Detect the R peaks of the QRS complex
 %                     % 함수 출처 : https://github.com/danielwedekind/qrsdetector/tree/d0efea0d883ea329b1110d3fa51802458d71f3b1
 %                     [qrs_pos,filt_data,int_data,thF1,thI1] = pantompkins_qrs(data(:,i), Fs);
@@ -51,9 +53,9 @@ for subject = 5:9
 %                     plot(f,pxx);
 %                     xlabel("Frequency");
 %                     ylabel("Power");
-%                     title("Lomb Periodogram");
-                    
-                end
+%                     title("Lomb Periodogram");            
+%                 end
+                
                 downData = downsample(data, 4);
                 
                 fileName = char(save_path_ECG + category + "\\s" + subject + "_" + sample + ".csv");

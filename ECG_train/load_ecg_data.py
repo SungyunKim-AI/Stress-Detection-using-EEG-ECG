@@ -13,8 +13,12 @@ class Load_Data:
         self.Subjects = 9
 
         # Dataset Path
-        self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/"
-        self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/"
+        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/baseline/"
+        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/normalized_data/stimuli/"
+        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_256/baseline/"
+        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_256/stimuli/"
+        self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_128/baseline/"
+        self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ECG_preprocessed/FS_128/stimuli/"
 
         self.deleteData = [1,2,3,8,9]
 
@@ -94,8 +98,24 @@ class Load_Data:
 # ================= Save Dataset Numpy format =====================
 [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = Load_Data().load_ecg_data()
 
-savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset.npz"
+savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
+
+# Sampling Rate 256 -> ecg_dataset_256
+# Train Data Shape :  (1175, 3, 10240)
+# Test Data Shape :  (170, 3, 10240)
+# Validate Data Shape :  (167, 3, 10240)
+# Train Labels Shape :  (1175, 2)
+# Test Labels Shape :  (170, 2)
+# Validate Labels Shape :  (167, 2)
+
+# Sampling Rate 128 -> ecg_dataset_128
+# Train Data Shape :  (1175, 3, 5120)
+# Test Data Shape :  (170, 3, 5120)
+# Validate Data Shape :  (167, 3, 5120)
+# Train Labels Shape :  (1175, 2)
+# Test Labels Shape :  (170, 2)
+# Validate Labels Shape :  (167, 2)

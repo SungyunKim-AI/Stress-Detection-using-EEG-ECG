@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from utils import plot_loss_curve, plot_acc_curve, normalization
 
 # Import Models
-from model_ECGModel_v1 import ECGModel_v1, DeepECGModel
+from model_ECGModel_v1 import ECGModel_v1, DeepECGModel, HealthMonitoring_Model, CustomModel
 from model_DeepConvNet import DeepConvNet
 
 # Load ECG Data numpy format
@@ -26,12 +26,13 @@ kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
 
 
 # 1D
-# x_Train = x_Train[:, 1, :]
-# x_Validate = x_Validate[:, 1, :]
-# x_Test = x_Test[:, 1, :]
-# x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
-# x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
-# x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+x_Train = x_Train[:, 2]
+x_Validate = x_Validate[:, 2]
+x_Test = x_Test[:, 2]
+x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+
 # Train Set Shape :  (1175, 5120, 1)
 # Test Set Shape :  (170, 5120, 1)    
 # Validate Set Shape :  (167, 5120, 1)
@@ -40,9 +41,10 @@ kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
 # Validate Labels Shape :  (167, 2) 
 
 # 2D
-x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
-x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
-x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, kernels)
+# x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
+# x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
+# x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, kernels)
+
 # Train Set Shape :  (1175, 3, 5120, 1)
 # Test Set Shape :  (170, 3, 5120, 1)
 # Validate Set Shape :  (167, 3, 5120, 1)
@@ -63,16 +65,24 @@ data.close()
 
 ###################### model ######################
 
-# model = ECGModel_v1(samples)
-model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.5)
 # model = DeepECGModel(samples)
+# model = ECGModel_v1(samples)
+# model = DeepConvNet(nb_classes=2, Chans=3, Samples=samples, dropoutRate=0.25)
 
+# model = DeepECGModel(samples)
+model = CustomModel(samples)
 
+# optimizer : health monitor는 SGD, 다른건 adam!!
 model.compile(
     loss='categorical_crossentropy',
     optimizer='adam',
     metrics=['accuracy']
 )
+# model.compile(
+#     loss='categorical_crossentropy',
+#     optimizer=tf.keras.optimizers.SGD(lr=0.01),
+#     metrics=['accuracy']
+# )
 
 model.summary()
 
@@ -97,3 +107,10 @@ fit_model = model.fit(
 
 plot_loss_curve(fit_model.history)
 plot_acc_curve(fit_model.history)
+
+probs = model.predict(x_Test)
+preds = probs.argmax(axis=-1)
+acc = np.mean(preds == y_Test.argmax(axis=-1))
+print("Classification accuracy: %f " % (acc))
+
+
