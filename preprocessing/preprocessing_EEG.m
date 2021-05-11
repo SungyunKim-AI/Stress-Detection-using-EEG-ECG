@@ -9,7 +9,7 @@
 % 3. CAR + FFT
 % 4. ASR + CAR + FFT
 
-noOfSubjects = 9;           % 실험 대상 수
+noOfSubjects = 19;          % 실험 대상 수
 noOfSamples = 10;           % 실험 수
 samplingRate_EEG = 128;     % EEG Sampling Rate (Hz)
 filter_name = ["overall", "theta", "alpha", "beta"];
@@ -26,7 +26,11 @@ eeglab;
 %     for sample = 1:noOfSamples
 %             % => baseline
 %             fileName = char(load_path_EEG + "baseline\\s" + subject + "_" + sample + ".csv");
-%             baseline = readtable(fileName);
+%             try
+%                 baseline = readtable(fileName);
+%             catch
+%                 continue
+%             end
 %             baseline = baseline{:,:}.';
 %             baseline = detrend(baseline);
 %         
@@ -35,6 +39,8 @@ eeglab;
 %             stimuli = readtable(fileName);
 %             stimuli = stimuli{:,:}.';
 %             stimuli = detrend(stimuli);
+%             
+% 
 % 
 %         for i = 1:4
 %             baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',samplingRate_EEG,'pnts',0,'xmin',0);
@@ -48,10 +54,18 @@ eeglab;
 %             writematrix(baseline_EEG.data, filename);
 %             filename = char(save_path_EEG + "stimuli\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
 %             writematrix(stimuli_EEG.data, filename);
+%             
+%             % Plot
+% %             subplot(4,1,1), plot(baseline.'), title ('baseline'), grid on
+% %             subplot(4,1,2), plot(baseline_EEG.data.'), title ('filted baseline_EEG'), grid on
+% %             subplot(4,1,3), plot(stimuli.'), title ('stimuli'), grid on
+% %             subplot(4,1,4), plot(stimuli_EEG.data.'), title ('filted stimuli_EEG'), grid on
 %         end
 %     end
 % end
-% 
+
+
+
 % ==================== CAR (Common Average Reference) ====================
 load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG\\";
 save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\CAR_preprocessed\\EEG\\";
@@ -81,40 +95,42 @@ for subject = 1:noOfSubjects
         end 
     end
 end
-% 
-% ============= ASR (Artifact Subspace Reconstruction) + CAR =============
-load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG\\";
-save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ASR_CAR_preprocessed\\EEG\\";
 
-for subject = 1:noOfSubjects
-    for sample = 1:noOfSamples
-        for i = 1:4
-            % => baseline
-            fileName = char(load_path_EEG + "baseline\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
-            baseline = readtable(fileName);
-            baseline = baseline{:,:};
-            baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',samplingRate_EEG,'pnts',0,'xmin',0);
-           
-            baseline_EEG = pop_clean_rawdata(baseline_EEG, 'FlatlineCriterion',5,'ChannelCriterion',0.8,'LineNoiseCriterion',4,'Highpass','off','BurstCriterion',20,'WindowCriterion','off','BurstRejection','on','Distance','Euclidian');
-            ASR_CAR_baseline = pop_reref(baseline_EEG, []);
-            
-            % => stimuli
-            fileName = char(load_path_EEG + "stimuli\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
-            stimuli = readtable(fileName);
-            stimuli = stimuli{:,:};
-            stimuli_EEG = pop_importdata('dataformat','array','nbchan',0,'data','stimuli','srate',samplingRate_EEG,'pnts',0,'xmin',0);
-            
-            stimuli_EEG = pop_clean_rawdata(stimuli_EEG, 'FlatlineCriterion',5,'ChannelCriterion',0.8,'LineNoiseCriterion',4,'Highpass','off','BurstCriterion',20,'WindowCriterion','off','BurstRejection','on','Distance','Euclidian');
-            ASR_CAR_stimuli = pop_reref(stimuli_EEG, []);
-            
-            % Save csv file
-            filename = char(save_path_EEG + "baseline\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
-            writematrix(ASR_CAR_baseline.data, filename);
-            filename = char(save_path_EEG + "stimuli\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
-            writematrix(ASR_CAR_stimuli.data, filename); 
-        end 
-    end
-end
+
+
+% % ============= ASR (Artifact Subspace Reconstruction) + CAR =============
+% load_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\band_filter_preprocessed\\EEG\\";
+% save_path_EEG = "C:\\Users\\user\\Desktop\\data_preprocessed\\ASR_CAR_preprocessed\\EEG\\";
+% 
+% for subject = 1:noOfSubjects
+%     for sample = 1:noOfSamples
+%         for i = 1:4
+%             % => baseline
+%             fileName = char(load_path_EEG + "baseline\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
+%             baseline = readtable(fileName);
+%             baseline = baseline{:,:};
+%             baseline_EEG = pop_importdata('dataformat','array','nbchan',0,'data','baseline','srate',samplingRate_EEG,'pnts',0,'xmin',0);
+%            
+%             baseline_EEG = pop_clean_rawdata(baseline_EEG, 'FlatlineCriterion',5,'ChannelCriterion',0.8,'LineNoiseCriterion',4,'Highpass','off','BurstCriterion',20,'WindowCriterion','off','BurstRejection','on','Distance','Euclidian');
+%             ASR_CAR_baseline = pop_reref(baseline_EEG, []);
+%             
+%             % => stimuli
+%             fileName = char(load_path_EEG + "stimuli\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
+%             stimuli = readtable(fileName);
+%             stimuli = stimuli{:,:};
+%             stimuli_EEG = pop_importdata('dataformat','array','nbchan',0,'data','stimuli','srate',samplingRate_EEG,'pnts',0,'xmin',0);
+%             
+%             stimuli_EEG = pop_clean_rawdata(stimuli_EEG, 'FlatlineCriterion',5,'ChannelCriterion',0.8,'LineNoiseCriterion',4,'Highpass','off','BurstCriterion',20,'WindowCriterion','off','BurstRejection','on','Distance','Euclidian');
+%             ASR_CAR_stimuli = pop_reref(stimuli_EEG, []);
+%             
+%             % Save csv file
+%             filename = char(save_path_EEG + "baseline\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
+%             writematrix(ASR_CAR_baseline.data, filename);
+%             filename = char(save_path_EEG + "stimuli\\" + filter_name(i) + "\\s" + subject + "_" + sample + ".csv");
+%             writematrix(ASR_CAR_stimuli.data, filename); 
+%         end 
+%     end
+% end
 
 
 
