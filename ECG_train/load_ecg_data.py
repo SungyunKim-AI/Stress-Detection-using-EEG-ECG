@@ -95,7 +95,26 @@ class Load_Data:
         return x_Train, x_Test, x_Validate
 
 
+    def CWT(self, train, test, validate, ch=2):
+        widths = np.arange(1, 31)
+        
+        x_Train, x_Test, x_Validate = [], [], []
 
+        for i, dataset in enumerate([train, test, validate]):
+            for sample in dataset[:, ch]:
+                cwtmatr = signal.cwt(sample, signal.ricker, widths)
+                if i == 0:
+                    x_Train.append(cwtmatr)
+                elif i == 1:
+                    x_Test.append(cwtmatr)
+                elif i == 2:
+                    x_Validate.append(cwtmatr)
+        
+        print("Train Data Shape : ", np.array(x_Train).shape)         # (1175, 3, 5120)
+        print("Test Data Shape : ", np.array(x_Test).shape)           # (170, 3, 5120)
+        print("Validate Data Shape : ", np.array(x_Validate).shape)   # (167, 3, 5120)
+
+        return x_Train, x_Test, x_Validate
 
 
 
