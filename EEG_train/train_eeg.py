@@ -2,7 +2,9 @@ import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from sklearn.model_selection import train_test_split
+from datetime import datetime
+
+from tensorflow.python.keras.callbacks import EarlyStopping
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 
@@ -12,7 +14,8 @@ from model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/numpy_dataset4.npz"
+# eeg_dataset_ASR_CAR_alpha / eeg_dataset_ASR_CAR_overall / eeg_dataset_CAR_alpha / eeg_dataset_CAR_overall
+loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha_30.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -22,7 +25,7 @@ y_Train = data['y_Train']
 y_Test = data['y_Test']
 y_Validate = data['y_Validate']
 
-kernels, chans, samples = 1, 14, x_Train.shape[2]
+kernels, chans, samples = 1, x_Train.shape[1], x_Train.shape[2]
 
 x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
 x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
@@ -42,38 +45,48 @@ data.close()
 ###################### model ######################
 
 model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
-               dropoutRate = 0.5, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
+               dropoutRate = 0.25, kernLength = 128, F1 = 8, D = 2, F2 = 16, 
                dropoutType = 'Dropout')
 
 # model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
 
 model.compile(
-    loss='categorical_crossentropy',
+    loss='binary_crossentropy',
     optimizer='adam',
     metrics=['accuracy']
 )
-
 model.summary()
 
 
-checkpoint_path = "eeg_training_3/cp-{epoch:04d}.ckpt"
+# Set Callback
+checkpoint_path = "checkpoints/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S") + "/cp-{epoch:04d}.ckpt"
+checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path, save_best_only=True, save_weights_only=True, verbose=1)
 
-cp_callback = tf.keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path,
-    save_weights_only=True,
-    verbose=1)
+logdir="logs/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
-# `checkpoint_path` 포맷을 사용하는 가중치를 저장합니다
-model.save_weights(checkpoint_path.format(epoch=0))
+earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=20, verbose=0)
+
+decay = 0.001 / 300      # initial_learning_rate / epochs   (Adam defaults learning_rate = 0.001)
+lr_decay_cb = tf.keras.callbacks.LearningRateScheduler(lambda epoch, lr: lr * 1 / (1+decay*epoch), verbose=0)
+
 
 fit_model = model.fit(
     x_Train,
     y_Train,
     epochs=300,
-    batch_size=16,
+    batch_size=128,
     validation_data=(x_Validate, y_Validate),
-    callbacks=[cp_callback]
+    callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb, lr_decay_cb]
 )
 
-plot_loss_curve(fit_model.history)
-plot_acc_curve(fit_model.history)
+
+checkpoint_dir = os.path.dirname(checkpoint_path)
+latest = tf.train.latest_checkpoint(checkpoint_dir)
+model.load_weights(latest)
+loss, acc = model.evaluate(x_Test,  y_Test, verbose=2)
+print("loss : {:5.2f} / accuracy: {:5.2f}%".format(loss, 100*acc))
+
+# Load Tensorboard
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210512-180516

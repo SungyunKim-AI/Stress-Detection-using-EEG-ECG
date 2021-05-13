@@ -10,9 +10,7 @@ from model_ECGModel_v1 import *
 from model_DeepConvNet import DeepConvNet
 
 # Load ECG Data numpy format
-# loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_128.npz"
-loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_QRS_256.npz"
-# loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset_STFT_256.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -25,16 +23,16 @@ y_Validate = data['y_Validate']
 data.close()
 
 # 1D
-samples = x_Train.shape[1]
-x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
-x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
-x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+# samples = x_Train.shape[1]
+# x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+# x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+# x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
 
 # 2D
-# x, y = x_Train.shape[1], x_Train.shape[2]
-# x_Train = x_Train.reshape(x_Train.shape[0], x, y, 1)
-# x_Validate = x_Validate.reshape(x_Validate.shape[0], x, y, 1)
-# x_Test = x_Test.reshape(x_Test.shape[0], x, y, 1)
+x, y = x_Train.shape[1], x_Train.shape[2]
+x_Train = x_Train.reshape(x_Train.shape[0], x, y, 1)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], x, y, 1)
+x_Test = x_Test.reshape(x_Test.shape[0], x, y, 1)
 
 # Train Set Shape :  (1175, 129, 45, 1)
 # Test Set Shape :  (170, 129, 45, 1)
@@ -57,10 +55,10 @@ print("Validate Labels Shape : ", y_Validate.shape)
 # 1D
 # model = DeepECGModel(samples)
 # model = ECGModel_v1(samples)
-model = CustomModel(samples)
+# model = CustomModel(samples)
 
 # 2D
-# model = DeepConvNet(nb_classes=2, Chans=x, Samples=y, dropoutRate=0.25)
+model = DeepConvNet(nb_classes=2, Chans=x, Samples=y, dropoutRate=0.5)
 
 
 

@@ -18,8 +18,6 @@ __pycache__
 .vscode/settings.json
 *.asv
 
-#Checkpoint
-training_1/
-training_2/
-training_3/
-ecg_training_1/
+# Model save file
+logs/
+checkpoints/
