@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 class Load_Data:
     
-    def __init__(self, home_dir, ch = list(range(3)), fs=512, ss=40, step=2, subejct=19):
+    def __init__(self, home_dir, ch = list(range(3)), fs=512, ss=30, step=2, subejct=19):
         self.Fs = fs    # Sample Frequency (Hz)
         self.Ss = ss     # Sample second (sec)
         self.step = step    # Overlapping Step (sec)
@@ -147,12 +147,12 @@ np.savez_compressed(savePath,
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
-# Train Data Shape :  (4969, 3, 10240)
-# Test Data Shape :  (621, 3, 10240)
-# Validate Data Shape :  (622, 3, 10240)
-# Train Labels Shape :  (4969, 2)
-# Test Labels Shape :  (621, 2)
-# Validate Labels Shape :  (622, 2)
+# Train Data Shape :  (6169, 3, 7680)
+# Test Data Shape :  (771, 3, 7680)
+# Validate Data Shape :  (772, 3, 7680)
+# Train Labels Shape :  (6169, 2)
+# Test Labels Shape :  (771, 2)
+# Validate Labels Shape :  (772, 2)
 
 data_loader = Load_Data(home_dir="ECG_128", fs=128)
 [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = data_loader.load_ecg_data()
@@ -161,20 +161,20 @@ np.savez_compressed(savePath,
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
-# Train Data Shape :  (4969, 3, 5120)
-# Test Data Shape :  (621, 3, 5120)
-# Validate Data Shape :  (622, 3, 5120)
-# Train Labels Shape :  (4969, 2)
-# Test Labels Shape :  (621, 2)
-# Validate Labels Shape :  (622, 2)
+# Train Data Shape :  (6169, 3, 3840)
+# Test Data Shape :  (771, 3, 3840)
+# Validate Data Shape :  (772, 3, 3840)
+# Train Labels Shape :  (6169, 2)
+# Test Labels Shape :  (771, 2)
+# Validate Labels Shape :  (772, 2)
 
-ecg_dataset_256 = Load_Data(home_dir="ECG_256", fs=256)
-[train, test, validate, y_Train, y_Test, y_Validate] = ecg_dataset_256.load_ecg_data()
-[x_Train, x_Test, x_Validate] = ecg_dataset_256.STFT(train, test, validate)
-savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_256.npz"
-np.savez_compressed(savePath, 
-    x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
-    y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
+# ecg_dataset_256 = Load_Data(home_dir="ECG_256", fs=256)
+# [train, test, validate, y_Train, y_Test, y_Validate] = ecg_dataset_256.load_ecg_data()
+# [x_Train, x_Test, x_Validate] = ecg_dataset_256.STFT(train, test, validate)
+# savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_256.npz"
+# np.savez_compressed(savePath, 
+#     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
+#     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
 # Train Data Shape :  (4969, 129, 45)
 # Test Data Shape :  (621, 129, 45)
@@ -184,13 +184,13 @@ np.savez_compressed(savePath,
 # Validate Labels Shape :  (167, 2)
 
 
-ecg_dataset_128 = Load_Data(home_dir="ECG_128", fs=128)
-[train, test, validate, y_Train, y_Test, y_Validate] = ecg_dataset_128.load_ecg_data()
-[x_Train, x_Test, x_Validate] = ecg_dataset_128.STFT(train, test, validate)
-savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_128.npz"
-np.savez_compressed(savePath, 
-    x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
-    y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
+# ecg_dataset_128 = Load_Data(home_dir="ECG_128", fs=128)
+# [train, test, validate, y_Train, y_Test, y_Validate] = ecg_dataset_128.load_ecg_data()
+# [x_Train, x_Test, x_Validate] = ecg_dataset_128.STFT(train, test, validate)
+# savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_STFT_128.npz"
+# np.savez_compressed(savePath, 
+#     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
+#     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
 # Train Data Shape :  (4969, 129, 22)
 # Test Data Shape :  (621, 129, 22)

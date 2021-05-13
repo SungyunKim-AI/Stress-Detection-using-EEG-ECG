@@ -5,6 +5,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D, Dense, Flatten, Dropout, BatchNormalization, GlobalAveragePooling1D, Activation
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
+from tensorflow.python.keras import activations
 
 
 def ECGModel_v1(samples):
@@ -87,24 +88,27 @@ def ECGModel_v1(samples):
 
     return model
 
-def DeepECGModel(input_dim, output_dim=2):
+def DeepECGModel(input_dim, output_dim=2, dropout=0.5):
     model = Sequential([
         Input(shape=(input_dim, 1), name='input_layer'),
-        Conv1D(64, 55, activation='relu', input_shape=(input_dim, 1)),
-        MaxPooling1D(2),
-        Dropout(0.1),
-        Conv1D(64, 55, activation='relu'),
-        MaxPooling1D(2),
-        Dropout(0.1),
-        Conv1D(64, 55, activation='relu'),
-        MaxPooling1D(2),
-        Dropout(0.1),
-        Flatten(),
+        Conv1D(128, 55, activation='relu', input_shape=(input_dim, 1)),
+        MaxPooling1D(10),
+        Dropout(dropout),
+        Conv1D(128, 25, activation='relu'),
+        MaxPooling1D(5),
+        Dropout(dropout),
+        Conv1D(128, 10, activation='relu'),
+        MaxPooling1D(5),
+        Dropout(dropout),
+        Conv1D(128, 5, activation='relu'),
+        GlobalAveragePooling1D(),
+        # Flatten(),
         Dense(256, kernel_initializer='normal', activation='relu'),
-        Dropout(0.1),
+        Dropout(dropout),
         Dense(128, kernel_initializer='normal', activation='relu'),
-        Dropout(0.1),
+        Dropout(dropout),
         Dense(64, kernel_initializer='normal', activation='relu'),
+        Dropout(dropout),
         Dense(output_dim, kernel_initializer='normal', activation='softmax')
     ])
 

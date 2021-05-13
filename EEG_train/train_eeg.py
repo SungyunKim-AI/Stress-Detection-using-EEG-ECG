@@ -1,10 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
 from datetime import datetime
-
-from tensorflow.python.keras.callbacks import EarlyStopping
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 

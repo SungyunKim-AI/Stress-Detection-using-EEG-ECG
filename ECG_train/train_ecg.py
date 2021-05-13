@@ -1,7 +1,9 @@
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
+from datetime import datetime
+
+from tensorflow.python.keras.backend import dropout
 
 from utils import plot_loss_curve, plot_acc_curve, normalization
 
@@ -10,12 +12,12 @@ from model_ECGModel_v1 import *
 from model_DeepConvNet import DeepConvNet
 
 # Load ECG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_256.npz"
 data = np.load(loadPath)
 
-x_Train = data['x_Train']
-x_Test = data['x_Test']
-x_Validate = data['x_Validate']
+x_Train = data['x_Train'][:,2,:]
+x_Test = data['x_Test'][:,2,:]
+x_Validate = data['x_Validate'][:,2,:]
 y_Train = data['y_Train']
 y_Test = data['y_Test']
 y_Validate = data['y_Validate']
@@ -23,23 +25,16 @@ y_Validate = data['y_Validate']
 data.close()
 
 # 1D
-# samples = x_Train.shape[1]
-# x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
-# x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
-# x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
+samples = x_Train.shape[1]
+x_Train = x_Train.reshape(x_Train.shape[0], samples, 1)
+x_Validate = x_Validate.reshape(x_Validate.shape[0], samples, 1)
+x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
 
 # 2D
-x, y = x_Train.shape[1], x_Train.shape[2]
-x_Train = x_Train.reshape(x_Train.shape[0], x, y, 1)
-x_Validate = x_Validate.reshape(x_Validate.shape[0], x, y, 1)
-x_Test = x_Test.reshape(x_Test.shape[0], x, y, 1)
-
-# Train Set Shape :  (1175, 129, 45, 1)
-# Test Set Shape :  (170, 129, 45, 1)
-# Validate Set Shape :  (167, 129, 45, 1)
-# Train Labels Shape :  (1175, 2)
-# Test Labels Shape :  (170, 2)
-# Validate Labels Shape :  (167, 2)
+# chans, samples = x_Train.shape[1], x_Train.shape[2]
+# x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, 1)
+# x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, 1)
+# x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, 1)
 
 
 print("Train Set Shape : ", x_Train.shape)          # (2384, 13, 5120, 1)
@@ -50,57 +45,62 @@ print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
 print("Validate Labels Shape : ", y_Validate.shape) 
 
 
+
 ###################### model ######################
 
 # 1D
-# model = DeepECGModel(samples)
+model = DeepECGModel(samples, dropout=0.5)
 # model = ECGModel_v1(samples)
 # model = CustomModel(samples)
 
 # 2D
-model = DeepConvNet(nb_classes=2, Chans=x, Samples=y, dropoutRate=0.5)
-
+# model = DeepConvNet(nb_classes=2, Chans=chans, Samples=samples, dropoutRate=0.5)
 
 
 model.compile(
-    loss='categorical_crossentropy',
+    loss='binary_crossentropy',
     optimizer='adam',
     metrics=['accuracy']
 )
 # optimizer : health monitor는 SGD, 다른건 adam!!
 # model.compile(
-#     loss='categorical_crossentropy',
+#     loss='binary_crossentropy',
 #     optimizer=tf.keras.optimizers.SGD(lr=0.01),
 #     metrics=['accuracy']
 # )
 
 model.summary()
 
-checkpoint_path = "ecg_training_2/cp-{epoch:04d}.ckpt"
+# Set Callback
+checkpoint_path = "checkpoints/ECG/" + datetime.now().strftime("%Y%m%d-%H%M%S") + "/cp-{epoch:04d}.ckpt"
+checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path, save_best_only=True, save_weights_only=True, verbose=1)
 
-cp_callback = tf.keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path,
-    save_weights_only=True,
-    verbose=1)
+logdir="logs/ECG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
-# `checkpoint_path` 포맷을 사용하는 가중치를 저장합니다
-model.save_weights(checkpoint_path.format(epoch=0))
+earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=20, verbose=0)
+
+decay = 0.001 / 1000      # initial_learning_rate / epochs   (Adam defaults learning_rate = 0.001)
+lr_decay_cb = tf.keras.callbacks.LearningRateScheduler(lambda epoch, lr: lr * 1 / (1+decay*epoch), verbose=0)
+
 
 fit_model = model.fit(
     x_Train,
     y_Train,
-    epochs=200,
-    batch_size=20,
+    epochs=1000,
+    batch_size=128,
     validation_data=(x_Validate, y_Validate),
-    callbacks=[cp_callback]
+    shuffle=True,
+    callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb, lr_decay_cb]
 )
 
-plot_loss_curve(fit_model.history)
-plot_acc_curve(fit_model.history)
-
-probs = model.predict(x_Test)
-preds = probs.argmax(axis=-1)
-acc = np.mean(preds == y_Test.argmax(axis=-1))
-print("Classification accuracy: %f " % (acc))
+checkpoint_dir = os.path.dirname(checkpoint_path)
+latest = tf.train.latest_checkpoint(checkpoint_dir)
+model.load_weights(latest)
+loss, acc = model.evaluate(x_Test,  y_Test, verbose=2)
+print("loss : {:5.2f} / accuracy: {:5.2f}%".format(loss, 100*acc))
 
 
+# Load Tensorboard
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210512-180516

@@ -1,7 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten
 from tensorflow.keras.layers import Dense, Activation, Dropout
