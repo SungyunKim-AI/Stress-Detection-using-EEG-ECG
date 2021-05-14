@@ -51,15 +51,15 @@ print("Validate Labels Shape : ", y_Validate.shape)
 ###################### model ######################
 
 # 1D
-# model = DeepECGModel(samples, dropout=0.5)
-model = ECGModel_v1(input_dim=(samples,1))
+model = DeepECGModel(samples, dropout=0.5)
+# model = ECGModel_v1(input_dim=(samples,1))
 
 # 2D
 # model = DeepConvNet(nb_classes=2, Chans=chans, Samples=samples, dropoutRate=0.5)
 
 
-learnging_rate, epoch = 0.01, 1000
-optimizer = tf.keras.optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
+learnging_rate, epoch = 0.001, 500
+optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 model.compile(
     loss='binary_crossentropy',
     optimizer=optimizer,

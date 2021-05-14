@@ -15,25 +15,16 @@ class Load_Data:
         self.Subjects = 19
 
         # Dataset Path _ ASR + CAR
-        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/overall/"
-        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/overall/"
         self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/baseline/alpha/"
         self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/ASR_CAR_preprocessed/EEG/stimuli/alpha/"
 
-        # Dataset Path _ CAR
-        # self.baseline_paths = "C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/baseline/alpha/"
-        # self.stimuli_paths = "C:/Users/user/Desktop/data_preprocessed/CAR_preprocessed/EEG/stimuli/alpha/"
 
     # ============ 각 피실험자당 1개 Test, 1개 Validate 선정해서 오버래핑하고 셔플 ============
     def load_eeg_data(self):
         print("EEG Data Loading...")
 
-        x_Train = []
-        x_Test = []
-        x_Validate = []
-        y_Train = []
-        y_Test = []
-        y_Validate = []
+        x_Train, x_Test = [], [], []
+        y_Train, y_Test = [], []
 
         samples = shuffle(np.array(list(range(1,11))), random_state=42)
 
@@ -107,19 +98,3 @@ np.savez_compressed(savePath,
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
     
-
-# eeg_dataset_CAR_alpha_30
-# Train Data Shape :  (7795, 14, 3840)
-# Test Data Shape :  (949, 14, 3840)
-# Validate Data Shape :  (1004, 14, 3840)
-# Train Labels Shape :  (7795, 2)
-# Test Labels Shape :  (949, 2)
-# Validate Labels Shape :  (1004, 2)
-
-# eeg_dataset_ASR_alpha_30
-# Train Data Shape :  (7528, 13, 3840)
-# Test Data Shape :  (901, 13, 3840)
-# Validate Data Shape :  (972, 13, 3840)
-# Train Labels Shape :  (7528, 2)
-# Test Labels Shape :  (901, 2)
-# Validate Labels Shape :  (972, 2)
