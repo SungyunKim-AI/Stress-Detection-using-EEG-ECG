@@ -1,65 +1,37 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D, Dense, Flatten, Dropout, BatchNormalization, GlobalAveragePooling1D, Activation
-from tensorflow.keras.layers.experimental.preprocessing import Rescaling
-from tensorflow.python.keras import activations
+from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D
+from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization, GlobalAveragePooling1D
 
-
-def ECGModel_v1(samples):
+def ECGModel_v1(input_dim):
     # 모델 구성하기
-    make_model = Sequential([
-        Input(shape=(samples, 1), name='input_layer'),
-        Conv1D(
-            filters=30,
-            kernel_size=64,
-            strides=1,
-            padding="same",
-            activation='relu',
-            name='conv_layer1'
-        ),
-        Dropout(0.25),
-        # Conv1D(
-        #     filters=256,
-        #     kernel_size=256,
-        #     strides=1,
-        #     padding="same",
-        #     activation='relu',
-        #     name='conv_layer2'
-        # ),
-        # Dropout(0.5),
-        Conv1D(
-            filters=30,
-            kernel_size=64,
-            strides=1,
-            padding="same",
-            activation='relu',
-            name='conv_layer3'
-        ),
-        MaxPooling1D(
-            pool_size=2
-        ),
-        Conv1D(
-            filters=30,
-            kernel_size=64,
-            strides=1,
-            padding="same",
-            activation='relu',
-            name='conv_layer4'
-        ),
-        Dropout(0.25),
-        MaxPooling1D(
-            pool_size=2
-        ),
-        Flatten(),
-        Dense(512, activation='relu'),
-        Dense(64, activation='relu'),
-        Dense(2, activation='softmax', name='output_layer')
-    ])
+    input_main = Input(input_dim)
+    block1 = Conv1D(filters=128, kernel_size=50, padding='same', strides=3, activation='relu')(input_main)
+    block1 = BatchNormalization()(block1)
+    block1 = MaxPooling1D(pool_size=2, strides=3, padding = 'same')(block1)
 
-    return make_model
+    block2 = Conv1D(filters=32, kernel_size=7, padding='same', strides=1, activation='relu')(block1)
+    block2 = BatchNormalization()(block2)
+    block2 = MaxPooling1D(pool_size=2, strides=2, padding = 'same')(block2) 
+    block2 = Dropout(0.5)(block2)
+
+    block3 = Conv1D(32, 10, padding='same', activation='relu')(block2) 
+    block3 = Conv1D(128, 5, padding='same', activation='relu', strides=2)(block3)
+    block3 = MaxPooling1D(pool_size=2, strides=2, padding = 'same')(block3)
+    block3 = Dropout(0.5)(block3)
+    
+    block4 = Conv1D(filters=256, kernel_size=15, padding = 'same', activation = 'relu')(block3)
+    block4 = MaxPooling1D(pool_size=2, strides=2, padding = 'same')(block4)
+    
+    block5 = Conv1D(filters=512, kernel_size=5, padding='same', activation='relu')(block4)
+    block5 = Conv1D(filters=128, kernel_size=3, padding='same', activation='relu')(block5)
+    block5 = Dropout(0.5)(block5)
+    
+    flatten = Flatten()(block5)
+    dense = Dense(units=512, activation = 'relu')(flatten)
+    dropout = Dropout(0.5)(dense)
+    softmax = Dense(units=2, activation='softmax')(dropout)
+
+    return Model(inputs=input_main, outputs=softmax)
 
 
 # https://github.com/Apollo1840/deepECG
@@ -91,8 +63,8 @@ def ECGModel_v1(samples):
 def DeepECGModel(input_dim, output_dim=2, dropout=0.5):
     model = Sequential([
         Input(shape=(input_dim, 1), name='input_layer'),
-        Conv1D(128, 55, activation='relu', input_shape=(input_dim, 1)),
-        MaxPooling1D(10),
+        Conv1D(filters=128, kernel_size=55, activation='relu', input_shape=(input_dim, 1)),
+        MaxPooling1D(pool_size=10),
         Dropout(dropout),
         Conv1D(128, 25, activation='relu'),
         MaxPooling1D(5),
@@ -113,53 +85,3 @@ def DeepECGModel(input_dim, output_dim=2, dropout=0.5):
     ])
 
     return model
-
-
-# health moritoring ~~~ 논문
-def HealthMonitoring_Model(input_dim):
-    model = Sequential([
-        Input(shape=(input_dim, 1), name='input_layer'),
-        Conv1D(16, 64, activation='relu', input_shape=(input_dim, 1)),
-        MaxPooling1D(2),
-        Conv1D(64, 64, activation='relu'),
-        MaxPooling1D(2),
-        Conv1D(64, 64, activation='relu'),
-        MaxPooling1D(2),
-        Flatten(),
-        Dense(1024, kernel_initializer='normal', activation='sigmoid'),
-        Dropout(0.25),
-        Dense(128, kernel_initializer='normal', activation='sigmoid'),
-        Dropout(0.25),
-        Dense(2, kernel_initializer='normal', activation='softmax')
-    ])
-
-    return model
-
-def CustomModel(input_dim):
-    input_main   = Input((input_dim, 1))
-
-    layer = Conv1D(10, 128, input_shape=(input_dim, 1))(input_main)
-    layer = Activation('relu')(layer)
-    layer = BatchNormalization()(layer)
-    layer = MaxPooling1D(2)(layer)
-    layer =Dropout(0.1)(layer)
-
-    layer = Conv1D(15, 128)(layer)
-    layer = Activation('relu')(layer)
-    layer = BatchNormalization()(layer)
-    layer = MaxPooling1D(2)(layer)
-    layer = Dropout(0.1)(layer)
-
-    layer = Conv1D(20, 128)(layer)
-    layer = Activation('relu')(layer)
-    layer = BatchNormalization()(layer)
-    layer = MaxPooling1D(2)(layer)
-    layer =Dropout(0.1)(layer)
-
-    layer = Flatten()(layer)
-    layer = Dense(512, kernel_initializer='normal', activation='relu')(layer)
-    layer = Dropout(0.1)(layer)
-    layer = Dense(128, kernel_initializer='normal', activation='relu')(layer)
-    output = Dense(2, kernel_initializer='normal', activation='softmax')(layer)
-
-    return Model(inputs=input_main, outputs=output)

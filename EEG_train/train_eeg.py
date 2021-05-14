@@ -42,14 +42,18 @@ data.close()
 ###################### model ######################
 
 model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
-               dropoutRate = 0.25, kernLength = 128, F1 = 8, D = 2, F2 = 16, 
+               dropoutRate = 0.1, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
                dropoutType = 'Dropout')
 
 # model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
 
+
+
+learnging_rate, epoch = 0.001, 500
+optimizer = tf.keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 model.compile(
     loss='binary_crossentropy',
-    optimizer='adam',
+    optimizer=optimizer,
     metrics=['accuracy']
 )
 model.summary()
@@ -63,19 +67,16 @@ checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
 logdir="logs/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
-earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=20, verbose=0)
-
-decay = 0.001 / 300      # initial_learning_rate / epochs   (Adam defaults learning_rate = 0.001)
-lr_decay_cb = tf.keras.callbacks.LearningRateScheduler(lambda epoch, lr: lr * 1 / (1+decay*epoch), verbose=0)
+earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=50, verbose=0)
 
 
 fit_model = model.fit(
     x_Train,
     y_Train,
-    epochs=300,
+    epochs=epoch,
     batch_size=128,
     validation_data=(x_Validate, y_Validate),
-    callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb, lr_decay_cb]
+    callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
 
@@ -87,3 +88,9 @@ print("loss : {:5.2f} / accuracy: {:5.2f}%".format(loss, 100*acc))
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210512-180516
+
+
+
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-022326      # kernLength = 64, F1 = 16, D = 2, F2 = 32,
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-023657      # kernLength = 64, F1 = 16, D = 4, F2 = 64,
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-024424      # kernLength = 64, F1 =  8, D = 2, F2 = 16,  

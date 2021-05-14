@@ -43,15 +43,15 @@ class Load_Data:
                     data = np.transpose(data)
 
                     if i == 8:
-                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, category, subject)
                         x_Validate.extend(overlappedData)
                         y_Validate.extend(overlappedLabel)
                     elif i == 9:
-                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, category, subject)
                         x_Test.extend(overlappedData)
                         y_Test.extend(overlappedLabel)
                     else:
-                        [overlappedData, overlappedLabel] = self.data_overlapping(data, self.channels, category, subject)
+                        [overlappedData, overlappedLabel] = self.data_overlapping(data, category, subject)
                         x_Train.extend(overlappedData)
                         y_Train.extend(overlappedLabel)
 
@@ -116,21 +116,25 @@ class Load_Data:
 
 
 
-    def data_overlapping(self, data, chans, category, subject):
+    def data_overlapping(self, data, category, subject):
         overlappedData = []
         overlappedLabel = []
         endPoint = int(data.shape[1]/self.Fs) - self.Ss + 1
+
         for i in range(0, endPoint, self.step):
             start = i * self.Fs
             end = (i + self.Ss) * self.Fs
-            part_data = data[chans, start:end]
+            part_data = data[:, start:end]
+
+            # Data Normalize
+            part_data = (part_data - part_data.mean()) / (part_data.std())
 
             overlappedData.append(part_data)
-            overlappedLabel.append(self.label_append(category, subject))
+            overlappedLabel.append(self.label_append(category))
         
         return overlappedData, overlappedLabel
 
-    def label_append(self, category, subject):
+    def label_append(self, category):
         # Labels one-hot encoding
         if category == 0:       # 0: baseline
             return [1, 0]
@@ -140,12 +144,12 @@ class Load_Data:
 
 
 # ================= Save Dataset Numpy format =====================
-data_loader = Load_Data(home_dir="ECG_256" ,fs=256)
-[x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = data_loader.load_ecg_data()
-savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_256.npz"
-np.savez_compressed(savePath, 
-    x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
-    y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
+# data_loader = Load_Data(home_dir="ECG_256" ,fs=256)
+# [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = data_loader.load_ecg_data()
+# savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_256_norm.npz"
+# np.savez_compressed(savePath, 
+#     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
+#     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)
 
 # Train Data Shape :  (6169, 3, 7680)
 # Test Data Shape :  (771, 3, 7680)
@@ -156,7 +160,7 @@ np.savez_compressed(savePath,
 
 data_loader = Load_Data(home_dir="ECG_128", fs=128)
 [x_Train, x_Test, x_Validate, y_Train, y_Test, y_Validate] = data_loader.load_ecg_data()
-savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128.npz"
+savePath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
 np.savez_compressed(savePath, 
     x_Train=x_Train, x_Test=x_Test, x_Validate=x_Validate, 
     y_Train=y_Train, y_Test=y_Test, y_Validate=y_Validate)

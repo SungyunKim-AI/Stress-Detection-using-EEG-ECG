@@ -53,9 +53,9 @@ def EEGNet(nb_classes, Chans = 14, Samples = 128,
     
     dense        = Dense(nb_classes, name = 'dense', 
                          kernel_constraint = max_norm(norm_rate))(flatten)
-    softmax      = Activation('softmax', name = 'softmax')(dense)
+    sigmoid      = Activation('sigmoid', name = 'sigmoid')(dense)
     
-    return Model(inputs=input1, outputs=softmax)
+    return Model(inputs=input1, outputs=sigmoid)
 
 
 # class EEGLstmNet3fc_82_200(nn.Module):
