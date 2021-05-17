@@ -46,7 +46,7 @@ class Distiller(keras.Model):
             # Forward pass of student
             student_predcition = self.student(ECG_x, training=True)
             # Compute losses
-            student_loss= self.student_loss_fn(ECG_y, student_predcition)
+            student_loss = self.student_loss_fn(ECG_y, student_predcition)
             
             distillation_loss=self.distillation_loss_fn(
             tf.nn.softmax(teacher_prediction/self.temperature, axis=1),
