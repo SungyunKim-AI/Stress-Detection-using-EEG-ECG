@@ -71,69 +71,19 @@ x_Test_ECG = x_Test_ECG.reshape(x_Test_ECG.shape[0], samples, 1)
 
 
 # =============================== Create Model ===============================
-# Create EEG Model : Teacher
-teacher = EEGNet(nb_classes = 2, Chans = chans, Samples = samples, 
-               dropoutRate = 0.1, kernLength = 64, F1 = 8, D = 2, F2 = 16, 
-               dropoutType = 'Dropout')
+# Create Teacher Model : EEGNet
+teacher = loaded_model = keras.models.load_model('saved_model/EEGNet_model')
 teacher.summary()
 
-# Train Teacher Model
-learnging_rate, epoch = 0.001, 3
-optimizer = keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
-teacher.compile(
-    loss='binary_crossentropy',
-    optimizer=optimizer,
-    metrics=['accuracy']
-)
-
-checkpoint_path = "checkpoints/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S") + "/cp-{epoch:04d}.ckpt"
-# checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
-#     filepath=checkpoint_path, save_best_only=True, save_weights_only=True, verbose=1)
-checkpoint_cb = keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path, monitor='accuracy', mode='max', save_best_only=True, save_weights_only=True, verbose=1)
-
-logdir="logs/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-tensorboard_cb = keras.callbacks.TensorBoard(log_dir=logdir)
-
-teacher.fit(
-    x_Train_EEG,
-    y_Train_EEG,
-    epochs = epoch,
-    batch_size = 128,
-    callbacks = [checkpoint_cb, tensorboard_cb]
-)
+loss, acc = loaded_model.evaluate(x_Train_EEG,  y_Train_EEG, verbose=2)
+print('Loaded model accuracy : {:5.2f}%'.format(100*acc))
+softLabel = loaded_model.predict(x_Train_EEG)
+print(softLabel.shape)
 
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = False
-sess = tf.Session(config=config)
-checkpoint_dir = os.path.dirname(checkpoint_path)
-latest = tf.train.latest_checkpoint(checkpoint_dir)
-tf.train.Saver().restore(sess, save_path=latest)
-
-i = 0
-while i < len(x_Train_EEG):
-    j = min(i + batch_size, len(x_Train_EEG))
-    batch_xs = x_Train_EEG[i:j,:]
-    softmax_values.extend(sess.run(softmax, feed_dict={x: batch_xs, is_training:False}))
-    i = j
-
-teacher.load_weights(latest)
-
-# val_loss : 0.51587  val_accuracy : 0.7294
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210517-201022/
-
-
-
-
-
-# Create ECG Model : Student
+# Create Student Model : DeepECGModel
 student = DeepECGModel(samples, dropout=0.5)
 student.summary()
-
-# Clone student for later comparison
-student_scratch = keras.models.clone_model(student)
-
 
 learnging_rate, epoch = 0.001, 500
 optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
@@ -157,7 +107,7 @@ earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', min_delt
 
 student.fit(
     x_Train_ECG,
-    teacher.predict(x_Train_EEG),
+    softLabel,
     epochs=epoch,
     batch_size=128,
     validation_data=(x_Validate_ECG, y_Validate_ECG),

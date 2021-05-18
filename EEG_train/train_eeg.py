@@ -4,8 +4,8 @@ from tensorflow import keras
 from datetime import datetime
 
 # Import Models
-from .model_EEGNet import EEGNet
-from .model_DeepConvNet import DeepConvNet
+from model_EEGNet import EEGNet
+from model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
@@ -25,12 +25,12 @@ x_Train = x_Train.reshape(x_Train.shape[0], chans, samples, kernels)
 x_Validate = x_Validate.reshape(x_Validate.shape[0], chans, samples, kernels)
 x_Test = x_Test.reshape(x_Test.shape[0], chans, samples, kernels)
 
-print("Train Set Shape : ", x_Train.shape)          # (2384, 13, 5120, 1)
-print("Test Set Shape : ", x_Test.shape)            # (318, 13, 5120, 1)
-print("Validate Set Shape : ", x_Validate.shape)    # (330, 13, 5120, 1)
-print("Train Labels Shape : ", y_Train.shape)       # (2868, 2)
-print("Test Labels Shape : ", y_Test.shape)         # (394, 2)
-print("Validate Labels Shape : ", y_Validate.shape) # (400, 2)
+print("Train Set Shape : ", x_Train.shape)          # (5832, 13, 3840, 1)
+print("Test Set Shape : ", x_Test.shape)            # (766, 13, 3840, 1)
+print("Validate Set Shape : ", x_Validate.shape)    # (709, 13, 3840, 1)
+print("Train Labels Shape : ", y_Train.shape)       # (5832, 2)
+print("Test Labels Shape : ", y_Test.shape)         # (766, 2)
+print("Validate Labels Shape : ", y_Validate.shape) # (709, 2)
 
 data.close()
 
@@ -43,7 +43,6 @@ model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples,
                dropoutType = 'Dropout')
 
 # model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
-
 
 
 learnging_rate, epoch = 0.001, 300
@@ -78,8 +77,5 @@ model.fit(
 
 model.save('saved_model/EEGNet_model')
 
-
 # Load Tensorboard
-
-# kernLength = 64, F1 =  8, D = 2, F2 = 16
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210517-204012/cp-0080      # val_loss: 0.4869 - val_accuracy: 0.7715
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210518-183141
