@@ -4,12 +4,8 @@ import tensorflow as tf
 from tensorflow import keras
 from datetime import datetime
 
-from tensorflow.python.keras.backend import softmax
-
 # Import Model
-from model_EEGNet import EEGNet
-from model_ECGModel_v1 import DeepECGModel, ECGModel_v1
-from Distiller import *
+from model_DeepECGModel import DeepECGModel
 
 
 # =============================== Dataset Load ===============================
@@ -114,37 +110,8 @@ student.fit(
     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
-student.evaluate(x_Test_ECG, y_Test_ECG)
+student.save('saved_model/KD_model')
 
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210517-201710/
-
-
-# # =============================== Distiller ===============================
-# # Initialize  distiller
-# distiller = Distiller(student=student, teacher=teacher, train_data=x_Train_EEG)
-# distiller.compile(optimizer=keras.optimizers.Adam(),
-#                  metrics=[keras.metrics.Accuracy()],
-#                  student_loss_fn=keras.losses.BinaryCrossentropy(),
-#                  distillation_loss_fn=keras.losses.KLDivergence(),
-#                  alpha=0.3,
-#                  temperature=7)
-
-# # Distill teacher to student
-# checkpoint_path = "checkpoints/KD/" + datetime.now().strftime("%Y%m%d-%H%M%S") + "/cp-{epoch:04d}.ckpt"
-# checkpoint_cb = keras.callbacks.ModelCheckpoint(
-#     filepath=checkpoint_path, save_best_only=True, save_weights_only=True, verbose=1)
-
-# logdir="logs/KD/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-# tensorboard_cb = keras.callbacks.TensorBoard(log_dir=logdir)
-
-# earlystop_cb = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=50, verbose=0)
-
-# distiller.fit(
-#     x_Train_ECG, 
-#     y_Train_ECG, 
-#     epochs=epoch,
-#     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
-# )
-
-# # Evaluate student on test dataset
-# distiller.evaluate(x_Test_ECG, y_Test_ECG)
+# Load Tensorboard
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-191122
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-192550

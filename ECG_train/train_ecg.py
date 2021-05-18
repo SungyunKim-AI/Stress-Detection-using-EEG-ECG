@@ -1,11 +1,10 @@
-import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from datetime import datetime
 
 # Import Models
-from model_ECGNet import ECGModel_v1, DeepECGModel
+from model_ECG import ECGModel_v1, DeepECGModel
 
 # Load ECG Data numpy format
 loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
