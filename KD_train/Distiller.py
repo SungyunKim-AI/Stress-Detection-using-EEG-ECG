@@ -1,11 +1,13 @@
 import tensorflow as tf
 from tensorflow import keras
+import numpy as np
 
 class Distiller(keras.Model):
-    def __init__(self, student, teacher):
+    def __init__(self, student, teacher, train_data):
         super(Distiller, self).__init__()
         self.teacher = teacher
         self.student = student
+        self.train_data = train_data
 
     def compile(
             self,
@@ -34,23 +36,24 @@ class Distiller(keras.Model):
         self.alpha = alpha
     
 
-    def train_step(self, EEG_data, ECG_data):
-        EEG_x, EEG_y = EEG_data
-        ECG_x, ECG_y = ECG_data
-
-        
+    def train_step(self, data):
+        x,y = data
+        print(x.shape)
         # Forward pass of teacher
-        teacher_prediction = self.teacher(EEG_x, training=False)
-        print("Tecaher prediction   ...", teacher_prediction)
+        train_x = tf.convert_to_tensor(self.train_data[0:8], np.float32)
+        teacher_prediction = self.teacher(train_x, training=False)
+        print("Teacher prediction   ...", teacher_prediction)
         with tf.GradientTape() as tape:
             # Forward pass of student
-            student_predcition = self.student(ECG_x, training=True)
+            student_predcition = self.student(x, training=True)
             # Compute losses
-            student_loss = self.student_loss_fn(ECG_y, student_predcition)
+            student_loss = self.student_loss_fn(y, student_predcition)
             
+            print("softmax shape : ", tf.nn.softmax(teacher_prediction/self.temperature).shape)
+            print("softmax shape : ", tf.nn.softmax(student_predcition/self.temperature).shape)
             distillation_loss=self.distillation_loss_fn(
-            tf.nn.softmax(teacher_prediction/self.temperature, axis=1),
-            tf.nn.softmax(student_predcition/self.temperature, axis=1)
+                tf.nn.softmax(teacher_prediction/self.temperature),
+                tf.nn.softmax(student_predcition/self.temperature)
             )
 
             loss= self.alpha* student_loss + (1-self.alpha)* distillation_loss
@@ -63,7 +66,7 @@ class Distiller(keras.Model):
             self.optimizer.apply_gradients(zip(gradients, trainable_vars))
             
             # Update the metrics configured in `compile()`
-            self.compiled_metrics.update_state(ECG_y, student_predcition)
+            self.compiled_metrics.update_state(y, student_predcition)
             
             # Return a dict of performance
             results={ m.name: m.result()  for m in self.metrics}

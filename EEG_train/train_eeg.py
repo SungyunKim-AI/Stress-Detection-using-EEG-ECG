@@ -1,18 +1,15 @@
-import os
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras
 from datetime import datetime
 
-from utils import plot_loss_curve, plot_acc_curve, normalization
-
 # Import Models
-from model_EEGNet import EEGNet
-from model_DeepConvNet import DeepConvNet
+from .model_EEGNet import EEGNet
+from .model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
-# eeg_dataset_ASR_CAR_alpha / eeg_dataset_ASR_CAR_overall / eeg_dataset_CAR_alpha / eeg_dataset_CAR_overall
-loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha_30.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -49,7 +46,7 @@ model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples,
 
 
 
-learnging_rate, epoch = 0.001, 500
+learnging_rate, epoch = 0.001, 300
 optimizer = tf.keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 model.compile(
     loss='binary_crossentropy',
@@ -61,16 +58,16 @@ model.summary()
 
 # Set Callback
 checkpoint_path = "checkpoints/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S") + "/cp-{epoch:04d}.ckpt"
-checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path, save_best_only=True, save_weights_only=True, verbose=1)
+checkpoint_cb = keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path, monitor='accuracy', mode='max', save_best_only=True, save_weights_only=True, verbose=1)
 
 logdir="logs/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
-earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-4, patience=50, verbose=0)
+earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='accuracy', min_delta=1e-3, patience=50, verbose=0)
 
 
-fit_model = model.fit(
+model.fit(
     x_Train,
     y_Train,
     epochs=epoch,
@@ -79,18 +76,10 @@ fit_model = model.fit(
     callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
+model.save('saved_model/EEGNet_model')
 
-checkpoint_dir = os.path.dirname(checkpoint_path)
-latest = tf.train.latest_checkpoint(checkpoint_dir)
-model.load_weights(latest)
-loss, acc = model.evaluate(x_Test,  y_Test, verbose=2)
-print("loss : {:5.2f} / accuracy: {:5.2f}%".format(loss, 100*acc))
 
 # Load Tensorboard
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210512-180516
 
-
-
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-022326      # kernLength = 64, F1 = 16, D = 2, F2 = 32,
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-023657      # kernLength = 64, F1 = 16, D = 4, F2 = 64,
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210514-024424      # kernLength = 64, F1 =  8, D = 2, F2 = 16,  
+# kernLength = 64, F1 =  8, D = 2, F2 = 16
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210517-204012/cp-0080      # val_loss: 0.4869 - val_accuracy: 0.7715

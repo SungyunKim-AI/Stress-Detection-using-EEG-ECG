@@ -39,7 +39,7 @@ class Load_Data:
 
         for category, dir_path in enumerate([self.baseline_paths, self.stimuli_paths]):
             for subject in tqdm(range(1, self.Subjects+1)):
-                for sample in enumerate(samples):
+                for i,sample in enumerate(samples):
 
                     if subject == 12 and (sample in [6,7,8,9,10]):
                         continue

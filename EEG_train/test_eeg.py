@@ -9,7 +9,7 @@ from model_DeepConvNet import DeepConvNet
 
 
 # Load EEG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha_30.npz"
+loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
@@ -42,13 +42,28 @@ model.compile(
 )
 
 # Model Evaluate
-checkpoint_path = "checkpoints/EEG/20210514-024424/cp-{epoch:04d}.ckpt"
-checkpoint_dir = os.path.dirname(checkpoint_path)
-latest = tf.train.latest_checkpoint(checkpoint_dir)
-model.load_weights(latest)
-predictions = model.predict(x_Train)
-print(predictions.shape)
-print(predictions[10])
+# checkpoint_path = "checkpoints/EEG/20210517-204012/cp-0080.ckpt"
+# checkpoint_dir = os.path.dirname(checkpoint_path)
+# latest = tf.train.latest_checkpoint(checkpoint_dir)
+loaded_model = tf.keras.models.load_model('saved_model/EEGNet_model')
+loss, acc = loaded_model.evaluate(x_Train,  y_Train, verbose=2)
+print('복원된 모델의 정확도: {:5.2f}%'.format(100*acc))
+pred = loaded_model.predict(x_Train)
+print(pred.shape)
+# i, batch_size = 0, 128
+# x = tf.placeholder(tf.float32, shape=[x_Train.shape[0], chans, samples, kernels], name='Input')
+# y = tf.placeholder(tf.float32, shape=[x_Train.shape[0], 2], name='Output')
+# z = tf.placeholder(tf.float32, shape=[x_Train.shape[0], 2], name='Output')
+# is_training = tf.placeholder_with_default(True, shape=())
+
+# softmax = tf.nn.softmax()
+# softmax_values = np.zeros(shape=(len(x_Train), 2), dtype=np.float)
+
+# while i < len(x_Train):
+#     j = min(i + batch_size, len(x_Train))
+#     batch_xs = x_Train[i:j,:]
+#     softmax_values[i:j] = model(softmax, feed_dict={x: batch_xs, is_training:False})
+#     i = j
 
 # loss, acc = model.evaluate(x_Test,  y_Test, verbose=2)
 # print("loss : {:5.2f} / accuracy: {:5.2f}%".format(loss, 100*acc))

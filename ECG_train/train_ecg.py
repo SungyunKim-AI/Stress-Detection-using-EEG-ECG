@@ -15,9 +15,9 @@ from model_DeepConvNet import DeepConvNet
 loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
 data = np.load(loadPath)
 
-x_Train = data['x_Train'][:,2,:]
-x_Test = data['x_Test'][:,2,:]
-x_Validate = data['x_Validate'][:,2,:]
+x_Train = data['x_Train']
+x_Test = data['x_Test']
+x_Validate = data['x_Validate']
 y_Train = data['y_Train']
 y_Test = data['y_Test']
 y_Validate = data['y_Validate']
@@ -84,7 +84,6 @@ fit_model = model.fit(
     epochs=epoch,
     batch_size=128,
     validation_data=(x_Validate, y_Validate),
-    shuffle=True,
     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 

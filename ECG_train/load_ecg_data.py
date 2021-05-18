@@ -6,12 +6,12 @@ from tqdm import tqdm
 
 class Load_Data:
     
-    def __init__(self, home_dir, ch = list(range(3)), fs=512, ss=30, step=2, subejct=19):
-        self.Fs = fs    # Sample Frequency (Hz)
-        self.Ss = ss     # Sample second (sec)
+    def __init__(self, home_dir, ch = list(range(3)), fs=512, ss=30, step=2, subject=19):
+        self.Fs = fs        # Sample Frequency (Hz)
+        self.Ss = ss        # Sample second (sec)
         self.step = step    # Overlapping Step (sec)
         self.channels = ch
-        self.Subjects = subejct
+        self.Subjects = subject
         self.home_dir = home_dir
 
         # Dataset Path

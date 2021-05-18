@@ -59,10 +59,6 @@ class Load_Data:
                         y_Train_EEG.extend(overlappedLabel_EEG)
                         x_Train_ECG.extend(overlappedData_ECG)
                         y_Train_ECG.extend(overlappedLabel_ECG)
-                    
-        # Data Shuffle
-        # [x_Train, y_Train] = shuffle(np.array(x_Train), np.array(y_Train), random_state=42)
-        # [x_Test, y_Test] = shuffle(np.array(x_Test), np.array(y_Test), random_state=42)
         
         x_Train_EEG = np.array(x_Train_EEG)
         x_Test_EEG = np.array(x_Test_EEG)
@@ -78,26 +74,31 @@ class Load_Data:
         y_Test_ECG = np.array(y_Test_ECG)
         y_Validate_ECG = np.array(y_Validate_ECG)
 
+        # Data Shuffle
+        [x_Train_EEG, y_Train_EEG, x_Train_ECG, y_Train_ECG] = shuffle(x_Train_EEG, y_Train_EEG, x_Train_ECG, y_Train_ECG, random_state=42)
+        [x_Test_EEG, y_Test_EEG, x_Test_ECG, y_Test_ECG] = shuffle(x_Test_EEG, y_Test_EEG, x_Test_ECG, y_Test_ECG, random_state=42)
+        [x_Validate_EEG, y_Validate_EEG, x_Validate_ECG, y_Validate_ECG] = shuffle(x_Validate_EEG, y_Validate_EEG, x_Validate_ECG, y_Validate_ECG, random_state=42)
+
         print("EEG Data Shape")
-        print("Train Data Shape : ", x_Train_EEG.shape)         # 
-        print("Test Data Shape : ", x_Test_EEG.shape)           # 
-        print("Validate Data Shape : ", y_Validate_EEG.shape)   # 
-        print("Train Labels Shape : ", y_Train_EEG.shape)       # 
-        print("Test Labels Shape : ", y_Test_EEG.shape)         # 
-        print("Validate Labels Shape : ", y_Validate_EEG.shape) # 
+        print("Train Data Shape : ", x_Train_EEG.shape)         # (5832, 13, 3840)
+        print("Test Data Shape : ", x_Test_EEG.shape)           # (766, 13, 3840)
+        print("Validate Data Shape : ", y_Validate_EEG.shape)   # (709, 2)
+        print("Train Labels Shape : ", y_Train_EEG.shape)       # (5832, 2)
+        print("Test Labels Shape : ", y_Test_EEG.shape)         # (766, 2)
+        print("Validate Labels Shape : ", y_Validate_EEG.shape) # (709, 2)
 
         print("ECG Data Shape")
-        print("Train Data Shape : ", x_Train_ECG.shape)         # 
-        print("Test Data Shape : ", x_Test_ECG.shape)           # 
-        print("Validate Data Shape : ", y_Validate_ECG.shape)   # 
-        print("Train Labels Shape : ", y_Train_ECG.shape)       # 
-        print("Test Labels Shape : ", y_Test_ECG.shape)         # 
-        print("Validate Labels Shape : ", y_Validate_ECG.shape) # 
+        print("Train Data Shape : ", x_Train_ECG.shape)         # (5832, 3840)
+        print("Test Data Shape : ", x_Test_ECG.shape)           # (766, 3840)
+        print("Validate Data Shape : ", y_Validate_ECG.shape)   # (709, 2)
+        print("Train Labels Shape : ", y_Train_ECG.shape)       # (5832, 2)
+        print("Test Labels Shape : ", y_Test_ECG.shape)         # (766, 2)
+        print("Validate Labels Shape : ", y_Validate_ECG.shape) # (709, 2)
 
         return x_Train_EEG, x_Test_EEG, x_Validate_EEG, y_Train_EEG, y_Test_EEG, y_Validate_EEG, x_Train_ECG, x_Test_ECG, x_Validate_ECG, y_Train_ECG, y_Test_ECG, y_Validate_ECG
 
     # Cut and Overlap Data
-    def data_overlapping(self, data_EEG, data_ECG, category, subject):
+    def data_overlapping(self, data_EEG, data_ECG, category):
         overlappedData_EEG, overlappedLabel_EEG = [], []
         overlappedData_ECG, overlappedLabel_ECG = [], []
 
