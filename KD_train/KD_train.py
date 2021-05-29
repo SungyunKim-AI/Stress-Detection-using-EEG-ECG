@@ -5,7 +5,7 @@ from tensorflow import keras
 from datetime import datetime
 
 # Import Model
-from model_DeepECGModel import DeepECGModel
+from models.DeepECGNet import DeepECGNet
 
 
 # =============================== Dataset Load ===============================
@@ -78,7 +78,7 @@ print(softLabel.shape)
 
 
 # Create Student Model : DeepECGModel
-student = DeepECGModel(samples, dropout=0.5)
+student = DeepECGNet(samples, dropoutRate=0.5)
 student.summary()
 
 learnging_rate, epoch = 0.001, 500
@@ -114,4 +114,5 @@ student.save('saved_model/KD_model')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-191122
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-192550
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-192550  
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210528-210044
