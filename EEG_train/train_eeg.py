@@ -75,9 +75,11 @@ model.fit(
     callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
-model.save('saved_model/EEGNet_model3')
+model.save('saved_model/EEGNet_model2')
 
 # Load Tensorboard
+# CrossEntropy Logits = Flase / Output = Softmax
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210518-183141
 
-# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210530-165851
+# CrossEntropy Logits = True / Output = Dense(2)
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210530-180055

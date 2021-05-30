@@ -34,9 +34,7 @@ def DeepECGNet(input_dim, dropoutRate=0.5, temperature=1):
     dense = Dropout(dropoutRate)(dense)
     dense = Dense(64, kernel_initializer='normal', activation='relu')(dense)
     dense = Dropout(dropoutRate)(dense)
-    # softmax = Dense(2, kernel_initializer='normal', activation='softmax')(dense)
     dense = Dense(2)(dense)
-    softmax = tf.nn.softmax(dense / temperature, axis=1)
 
-    return Model(inputs=input1, outputs=softmax)
+    return Model(inputs=input1, outputs=dense)
 

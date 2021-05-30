@@ -4,10 +4,11 @@ from tensorflow.keras import layers
 import numpy as np
 
 class Distiller(keras.Model):
-    def __init__(self, student, teacher):
+    def __init__(self, student, teacher, chans):
         super(Distiller, self).__init__()
         self.student = student
         self.teacher = teacher
+        self.chans = chans
 
     def compile(
         self,
@@ -40,7 +41,7 @@ class Distiller(keras.Model):
     def train_step(self, data):
         # Unpack data
         x, y = data
-        student_x, teacher_x = x[:,13], y[:,0:13]
+        student_x, teacher_x = x[:,self.chans], x[:,0:self.chans]
 
         # Forward pass of teacher
         teacher_predictions = self.teacher(teacher_x, training=False)
