@@ -6,6 +6,7 @@ from datetime import datetime
 
 # Import Model
 from models.DeepECGNet import DeepECGNet
+from Distiller import Distiller
 
 
 # =============================== Dataset Load ===============================
@@ -82,11 +83,18 @@ print(softLabel.shape)
 student = DeepECGNet(samples, dropoutRate=0.5)
 student.summary()
 
+
+# Initialize and compile distiller
+distiller = Distiller(student=student)
+
 learnging_rate, epoch = 0.001, 500
 optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
-student.compile(
-    loss='binary_crossentropy',
+distiller.compile(
     optimizer=optimizer,
+    student_loss_fn=keras.losses.BinaryCrossentropy(from_logits=True),
+    distillation_loss_fn=keras.losses.KLDivergence(),
+    alpha=0.1,
+    temperature=10,
     metrics=['accuracy']
 )
 
@@ -102,18 +110,21 @@ tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
 earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=100, verbose=0)
 
-student.fit(
-    x_Train_ECG,
-    softLabel,
+distiller.fit(
+    x_Train_ECG, 
+    np.concatenate((y_Train_ECG, softLabel), axis=-1),
     epochs=epoch,
     batch_size=128,
-    validation_data=(x_Validate_ECG, y_Validate_ECG),
+    alidation_data=(x_Validate_ECG, y_Validate_ECG),
     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
-student.save('saved_model/KD_model')
+distiller.evaluate(x_Test_ECG, y_Test_ECG)
+
+distiller.save('saved_model/KD_model')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-191122
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-192550  
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210528-210044
+
