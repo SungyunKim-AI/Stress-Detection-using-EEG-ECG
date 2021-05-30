@@ -4,9 +4,10 @@ from tensorflow.keras import layers
 import numpy as np
 
 class Distiller(keras.Model):
-    def __init__(self, student):
+    def __init__(self, student, teacher):
         super(Distiller, self).__init__()
         self.student = student
+        self.teacher = teacher
 
     def compile(
         self,
@@ -39,19 +40,19 @@ class Distiller(keras.Model):
     def train_step(self, data):
         # Unpack data
         x, y = data
-        student_y, teacher_y = y[:,0:2], y[:,2:4]
+        student_x, teacher_x = x[:,13], y[:,0:13]
 
         # Forward pass of teacher
-        # teacher_predictions = self.teacher(x, training=False)
+        teacher_predictions = self.teacher(teacher_x, training=False)
         
         with tf.GradientTape() as tape:
             # Forward pass of student
-            student_predictions = self.student(x, training=True)
+            student_predictions = self.student(student_x, training=True)
 
             # Compute losses
-            student_loss = self.student_loss_fn(student_y, student_predictions)
+            student_loss = self.student_loss_fn(y, student_predictions)
             distillation_loss = self.distillation_loss_fn(
-                tf.nn.softmax(teacher_y / self.temperature, axis=1),
+                tf.nn.softmax(teacher_predictions / self.temperature, axis=1),
                 tf.nn.softmax(student_predictions / self.temperature, axis=1),
             )
             loss = self.alpha * student_loss + (1 - self.alpha) * distillation_loss

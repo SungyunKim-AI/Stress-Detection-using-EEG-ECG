@@ -85,7 +85,7 @@ student.summary()
 
 
 # Initialize and compile distiller
-distiller = Distiller(student=student)
+distiller = Distiller(student=student, teacher=teacher)
 
 learnging_rate, epoch = 0.001, 500
 optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
@@ -110,9 +110,11 @@ tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
 earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=100, verbose=0)
 
+x_distiller = np.concatenate((x_Train_EEG, x_Train_ECG.reshape(5832,1,3840,1)),axis=1)
+
 distiller.fit(
-    x_Train_ECG, 
-    np.concatenate((y_Train_ECG, softLabel), axis=-1),
+    x_distiller, 
+    y_Train_EEG,
     epochs=epoch,
     batch_size=128,
     alidation_data=(x_Validate_ECG, y_Validate_ECG),
@@ -121,7 +123,7 @@ distiller.fit(
 
 distiller.evaluate(x_Test_ECG, y_Test_ECG)
 
-distiller.save('saved_model/KD_model')
+distiller.save('saved_model/KD_model4')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-191122
