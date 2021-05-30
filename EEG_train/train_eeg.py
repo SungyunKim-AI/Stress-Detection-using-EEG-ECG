@@ -45,10 +45,10 @@ model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples,
 # model = DeepConvNet(nb_classes = 2, Chans = chans, Samples = samples, dropoutRate = 0.5)
 
 
-learnging_rate, epoch = 0.001, 300
+learnging_rate, epoch = 0.001, 500
 optimizer = tf.keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 model.compile(
-    loss='binary_crossentropy',
+    loss=keras.losses.BinaryCrossentropy(from_logits=True),
     optimizer=optimizer,
     metrics=['accuracy']
 )
@@ -63,7 +63,7 @@ checkpoint_cb = keras.callbacks.ModelCheckpoint(
 logdir="logs/EEG/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
-earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='accuracy', min_delta=1e-3, patience=50, verbose=0)
+earlystop_cb = tf.keras.callbacks.EarlyStopping(monitor='loss', min_delta=1e-3, patience=50, verbose=0)
 
 
 model.fit(
@@ -75,7 +75,9 @@ model.fit(
     callbacks= [checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
-model.save('saved_model/EEGNet_model')
+model.save('saved_model/EEGNet_model3')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210518-183141
+
+# tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/EEG/20210530-165851
