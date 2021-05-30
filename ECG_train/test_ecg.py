@@ -23,7 +23,7 @@ x_Test = x_Test.reshape(x_Test.shape[0], samples, 1)
 
 
 # Load Model
-loaded_model = keras.models.load_model('saved_model/DeepECGModel_model')
+loaded_model = keras.models.load_model('saved_model/DeepECGNet_model')
 
 # Model Evaluate
 loss, acc = loaded_model.evaluate(x_Test,  y_Test, verbose=2)

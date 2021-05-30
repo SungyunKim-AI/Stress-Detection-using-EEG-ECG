@@ -4,7 +4,7 @@ from tensorflow import keras
 from datetime import datetime
 
 # Import Models
-from model_ECG import ECGModel_v1, DeepECGModel
+from models.model_ECG import DeepECGNet
 
 # Load ECG Data numpy format
 loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
@@ -37,7 +37,7 @@ print("Validate Labels Shape : ", y_Validate.shape) # (709, 2)
 
 
 ###################### model ######################
-model = DeepECGModel(samples, dropout=0.1)
+model = DeepECGNet(samples, dropout=0.1)
 
 learnging_rate, epoch = 0.001, 500
 optimizer = keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
@@ -68,7 +68,7 @@ model.fit(
     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
-model.save('saved_model/DeepECGModel_model')
+model.save('saved_model/DeepECGNet_model')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/ECG/20210518-185538

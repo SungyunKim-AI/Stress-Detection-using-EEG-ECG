@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from datetime import datetime
+from sklearn.model_selection import KFold
 
 # Import Model
 from models.DeepECGNet import DeepECGNet
@@ -49,7 +50,7 @@ x_Test_ECG = x_Test_ECG.reshape(x_Test_ECG.shape[0], sampleLength, 1)
 
 
 # =============================== Create Model ===============================
-# Create Teacher Model : EEGNet
+# Load Pre-trained(Teacher) Model : EEGNet
 teacher = keras.models.load_model('saved_model/EEGNet_model2')
 teacher.summary()
 

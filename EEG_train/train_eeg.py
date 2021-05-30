@@ -48,6 +48,7 @@ model = EEGNet(nb_classes = 2, Chans = chans, Samples = samples,
 learnging_rate, epoch = 0.001, 500
 optimizer = tf.keras.optimizers.Adam(lr=learnging_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 model.compile(
+    # loss='binary_crossentropy',
     loss=keras.losses.BinaryCrossentropy(from_logits=True),
     optimizer=optimizer,
     metrics=['accuracy']
