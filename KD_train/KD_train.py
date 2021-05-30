@@ -10,7 +10,8 @@ from models.DeepECGNet import DeepECGNet
 
 # =============================== Dataset Load ===============================
 # Load EEG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha.npz"
+# loadPath = "C:/Users/user/Desktop/numpy_dataset/eeg_dataset_ASR_alpha.npz"
+loadPath = "/Users/kok_ksy/Desktop/dataset/eeg_dataset_ASR_alpha.npz"
 data = np.load(loadPath)
 
 x_Train_EEG = data['x_Train']
@@ -68,12 +69,12 @@ x_Test_ECG = x_Test_ECG.reshape(x_Test_ECG.shape[0], samples, 1)
 
 # =============================== Create Model ===============================
 # Create Teacher Model : EEGNet
-teacher = loaded_model = keras.models.load_model('saved_model/EEGNet_model')
+teacher = keras.models.load_model('saved_model/EEGNet_model')
 teacher.summary()
 
-loss, acc = loaded_model.evaluate(x_Train_EEG,  y_Train_EEG, verbose=2)
+loss, acc = teacher.evaluate(x_Train_EEG,  y_Train_EEG, verbose=2)
 print('Loaded model accuracy : {:5.2f}%'.format(100*acc))
-softLabel = loaded_model.predict(x_Train_EEG)
+softLabel = teacher.predict(x_Train_EEG)
 print(softLabel.shape)
 
 

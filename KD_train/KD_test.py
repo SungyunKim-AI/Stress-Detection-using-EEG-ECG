@@ -3,7 +3,8 @@ import tensorflow as tf
 from tensorflow import keras
 
 # Load ECG Data numpy format
-loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
+# loadPath = "C:/Users/user/Desktop/numpy_dataset/ecg_dataset_128_norm.npz"
+loadPath = "/Users/kok_ksy/Desktop/dataset/ecg_dataset_128_norm.npz"
 data = np.load(loadPath)
 
 x_Train = data['x_Train']
