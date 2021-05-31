@@ -3,10 +3,11 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D
 from tensorflow.keras.layers import Dense, Flatten, Dropout, GlobalAveragePooling1D
 from tensorflow.python.keras.backend import softmax
+from tensorflow.python.keras.layers.core import Activation
 
 
 # https://github.com/Apollo1840/deepECG
-def DeepECGNet(input_dim, dropoutRate=0.5, temperature=1):
+def DeepECGNet(input_dim, dropoutRate=0.5):
 
     # Input
     input1 = Input(shape=(input_dim, 1))
@@ -34,7 +35,7 @@ def DeepECGNet(input_dim, dropoutRate=0.5, temperature=1):
     dense = Dropout(dropoutRate)(dense)
     dense = Dense(64, kernel_initializer='normal', activation='relu')(dense)
     dense = Dropout(dropoutRate)(dense)
-    dense = Dense(2)(dense)
+    output1 = Dense(2)(dense)
 
-    return Model(inputs=input1, outputs=dense)
+    return Model(inputs=input1, outputs=output1)
 

@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -68,7 +67,7 @@ student.summary()
 # Initialize and compile distiller
 distiller = Distiller(student=student, teacher=teacher, chans=chans)
 
-learnging_rate, epoch = 0.001, 500
+learnging_rate, epoch = 0.001, 5
 optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=learnging_rate/epoch, amsgrad=False)
 distiller.compile(
     optimizer=optimizer,
@@ -101,9 +100,11 @@ distiller.fit(
     callbacks=[checkpoint_cb, tensorboard_cb, earlystop_cb]
 )
 
+print("Model Evaluate")
 distiller.evaluate(x_Test_ECG, y_Test_ECG)
 
-student.save('saved_model/KD_model2')
+# distiller.save('saved_model/KD_model2')
+distiller.save_weights('./saved_model/KD_model2/checkpoint')
 
 # Load Tensorboard
 # tensorboard --logdir=/Users/user/Desktop/Graduation-Project/logs/KD/20210518-191122
