@@ -1,5 +1,6 @@
 # 데이터 파일
 DREAMER.mat
+dataset/
 
 # 라이브러리 파일
 src/
@@ -12,6 +13,7 @@ ECG_512/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.DS_Store
 
 #Cache
 __pycache__
